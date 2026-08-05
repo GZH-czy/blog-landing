@@ -25,23 +25,30 @@
       <i class="fa-solid fa-music music-fab-icon"></i>
     </button>
     <div class="music-panel" id="musicPanel">
-      <img class="music-cover" id="musicCover" src="" alt="" />
-      <div class="music-info">
-        <div class="music-title" id="musicTitle">--</div>
-        <div class="music-artist" id="musicArtist">--</div>
-        <a class="music-id" id="musicId" href="#" target="_blank" rel="noopener" title="在网易云音乐中查看" hidden></a>
+      <div class="music-main">
+        <img class="music-cover" id="musicCover" src="" alt="" />
+        <div class="music-info">
+          <div class="music-title" id="musicTitle">--</div>
+          <div class="music-artist" id="musicArtist">--</div>
+          <a class="music-id" id="musicId" href="#" target="_blank" rel="noopener" title="在网易云音乐中查看" hidden></a>
+        </div>
+        <div class="music-progress">
+          <span class="music-time" id="musicCur">0:00</span>
+          <input type="range" class="music-seek" id="musicSeek" min="0" max="100" value="0" step="0.1" aria-label="进度" />
+          <span class="music-time" id="musicDur">0:00</span>
+        </div>
+        <div class="music-controls">
+          <button id="musicPrev" aria-label="上一首"><i class="fa-solid fa-backward-step"></i></button>
+          <button id="musicPlay" class="music-play" aria-label="播放/暂停"><i class="fa-solid fa-play"></i></button>
+          <button id="musicNext" aria-label="下一首"><i class="fa-solid fa-forward-step"></i></button>
+          <button id="musicListToggle" aria-label="播放列表" title="播放列表"><i class="fa-solid fa-list-ul"></i></button>
+          <button id="musicMute" aria-label="静音"><i class="fa-solid fa-volume-high"></i></button>
+          <input type="range" class="music-volume" id="musicVolume" min="0" max="1" step="0.01" value="0.7" aria-label="音量" />
+        </div>
       </div>
-      <div class="music-progress">
-        <span class="music-time" id="musicCur">0:00</span>
-        <input type="range" class="music-seek" id="musicSeek" min="0" max="100" value="0" step="0.1" aria-label="进度" />
-        <span class="music-time" id="musicDur">0:00</span>
-      </div>
-      <div class="music-controls">
-        <button id="musicPrev" aria-label="上一首"><i class="fa-solid fa-backward-step"></i></button>
-        <button id="musicPlay" class="music-play" aria-label="播放/暂停"><i class="fa-solid fa-play"></i></button>
-        <button id="musicNext" aria-label="下一首"><i class="fa-solid fa-forward-step"></i></button>
-        <button id="musicMute" aria-label="静音"><i class="fa-solid fa-volume-high"></i></button>
-        <input type="range" class="music-volume" id="musicVolume" min="0" max="1" step="0.01" value="0.7" aria-label="音量" />
+      <div class="music-list-wrap" id="musicListWrap" hidden>
+        <div class="music-list-header">播放列表</div>
+        <ul class="music-list" id="musicList"></ul>
       </div>
     </div>
     <audio id="musicAudio" preload="metadata"></audio>

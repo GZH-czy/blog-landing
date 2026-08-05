@@ -5,200 +5,153 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>安全跳转 · 即将离开</title>
   <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="https://picx.zhimg.com/80/v2-cf221ada6f0705db976d2f5d44b74f10_720w.webp?source=1def8aca" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="assets/style.css" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-                   "Microsoft YaHei", sans-serif;
-      color: #e8eef5;
-      background: linear-gradient(135deg, #1a1f2e 0%, #0f1420 100%);
-    }
-    .box {
+    /* go.html 专用样式（继承 style.css 变量） */
+    .go-card {
       width: 100%;
-      max-width: 520px;
-      padding: 36px 32px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 18px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      animation: in .5s ease both;
+      max-width: 440px;
+      padding: 40px 32px 32px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(var(--blur)) saturate(140%);
+      -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
+      box-shadow: var(--shadow);
+      text-align: center;
+      animation: cardIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
     }
-    @keyframes in { from { opacity: 0; transform: translateY(16px);} to {opacity:1; transform:none;} }
     .warn-icon {
       width: 56px; height: 56px;
       margin: 0 auto 18px;
       border-radius: 50%;
-      background: rgba(255,180,60,0.15);
+      background: rgba(255,180,60,0.18);
       color: #ffb43c;
       display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
+      font-size: 24px;
     }
-    h1 { font-size: 20px; text-align: center; margin-bottom: 8px; }
-    .tip { text-align: center; font-size: 13px; color: #9aa7b8; margin-bottom: 22px; }
+    .go-card h1 {
+      font-size: 22px;
+      font-weight: 700;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+      margin-bottom: 8px;
+    }
+    .go-card .tip {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
     .url-box {
       padding: 14px 16px;
-      background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 10px;
       font-size: 13px;
       word-break: break-all;
-      color: #7cc4ff;
-      margin-bottom: 12px;
+      color: var(--accent);
+      margin-bottom: 10px;
       user-select: all;
+      text-align: left;
     }
     .host-line {
       font-size: 12px;
-      color: #9aa7b8;
-      margin-bottom: 24px;
+      color: var(--text-muted);
+      margin-bottom: 26px;
       text-align: center;
     }
     .host-line b { color: #ffb43c; }
-    .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn {
-      padding: 11px 28px;
-      border-radius: 999px;
-      border: none;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
+    .go-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .go-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .btn-primary {
-      color: #10202e;
-      background: linear-gradient(135deg, #fff 0%, #cfe8ff 100%);
-      box-shadow: 0 6px 18px rgba(124,196,255,.35);
-    }
-    .btn-primary:hover { transform: translateY(-2px); }
-    .btn-ghost {
-      color: #cfd8e3;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-    .btn-ghost:hover { background: rgba(255,255,255,0.16); }
-    .countdown { font-size: 12px; color: #9aa7b8; text-align: center; margin-top: 18px; }
-    .countdown b { color: #7cc4ff; }
-    .error {
-      text-align: center;
-      color: #ff7a7a;
-      font-size: 14px;
-      padding: 20px 0;
-    }
-    .manual {
-      margin-bottom: 20px;
-      padding: 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px dashed rgba(255,255,255,0.15);
-      border-radius: 10px;
-    }
-    .manual label {
-      display: block;
-      font-size: 12px;
-      color: #9aa7b8;
-      margin-bottom: 8px;
-    }
-    .manual-row { display: flex; gap: 8px; }
-    .manual-row input {
-      flex: 1;
-      min-width: 0;
-      padding: 9px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(0,0,0,0.3);
-      color: #e8eef5;
-      font-size: 13px;
-      outline: none;
-      transition: border-color .2s;
-    }
-    .manual-row input:focus { border-color: #7cc4ff; }
-    .btn-mini {
-      padding: 0 16px;
-      border-radius: 8px;
-      border: none;
-      background: linear-gradient(135deg,#fff 0%,#cfe8ff 100%);
-      color: #10202e;
-      font-size: 13px;
+      padding: 12px 36px;
+      font-size: 15px;
       font-weight: 600;
+      letter-spacing: 1px;
+      color: #10202e;
+      background: linear-gradient(135deg, #ffffff 0%, #cfe8ff 100%);
+      border: none;
+      border-radius: 999px;
       cursor: pointer;
-      white-space: nowrap;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(124,196,255,0.35);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
-    .btn-mini:hover { filter: brightness(1.05); }
-    .manual-hint {
-      margin-top: 8px;
+    .go-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(124,196,255,0.55); }
+    .go-btn:active { transform: translateY(0); }
+    .go-btn-ghost {
+      color: var(--text-soft);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: none;
+    }
+    .go-btn-ghost:hover { background: rgba(255,255,255,0.2); }
+    .countdown {
       font-size: 12px;
-      min-height: 16px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 18px;
+      min-height: 18px;
     }
-    .manual-hint.ok { color: #6ecb8a; }
-    .manual-hint.err { color: #ff7a7a; }
+    .countdown b { color: var(--accent); }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div id="content">
-      <div class="warn-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h1 id="pageTitle">您即将离开本站</h1>
-      <p class="tip" id="pageTip">下方为外部链接，请确认其安全性后再访问。</p>
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="bg-mask"></div>
 
-      <!-- 目标预览（无 url 参数时隐藏） -->
-      <div id="previewSection">
-        <div class="url-box" id="targetUrl"></div>
-        <div class="host-line">目标域名：<b id="host">-</b></div>
-      </div>
+  <main class="stage">
+    <section class="go-card">
+      <div class="warn-icon"><i class="fa-solid fa-link"></i></div>
+      <h1>您即将离开本站</h1>
+      <p class="tip">外部链接请注意安全，确认无误后再继续访问。</p>
 
-      <!-- 手动输入 / 粘贴链接（始终显示） -->
-      <div class="manual">
-        <label for="manualUrl" id="manualLabel">粘贴或输入要跳转的链接：</label>
-        <div class="manual-row">
-          <input type="text" id="manualUrl" placeholder="https://example.com" spellcheck="false" autocomplete="off" />
-          <button class="btn-mini" id="manualGo" type="button">跳转</button>
-        </div>
-        <p class="manual-hint" id="manualHint"></p>
-      </div>
+      <div class="url-box" id="targetUrl"></div>
+      <div class="host-line">目标域名：<b id="host">-</b></div>
 
-      <div class="actions" id="actions">
-        <a class="btn btn-primary" id="goBtn" href="#" rel="noopener noreferrer">
+      <div class="go-actions">
+        <a class="go-btn" id="goBtn" href="#" rel="noopener noreferrer">
           <i class="fa-solid fa-arrow-up-right-from-square"></i> 继续访问
         </a>
-        <a class="btn btn-ghost" id="backBtn" href="javascript:history.back()">
+        <button class="go-btn go-btn-ghost" id="backBtn" type="button">
           <i class="fa-solid fa-arrow-left"></i> 返回
-        </a>
+        </button>
       </div>
       <div class="countdown" id="countdown"></div>
-    </div>
-  </div>
+    </section>
+  </main>
 
 <script>
 (function () {
   'use strict';
 
-  var AUTO_WAIT = 5; // 自动跳转秒数；如需关闭设为 0
+  // 背景图（和 index.html 一致）
+  function pickBg() {
+    var list = (window.SITE_CONFIG && window.SITE_CONFIG.backgrounds) || [];
+    if (!list.length) return 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80';
+    return list[Math.floor(Math.random() * list.length)];
+  }
+  function setBg(url) {
+    var layer = document.getElementById('bgLayer');
+    if (!layer) return;
+    var img = new Image();
+    img.onload = function () {
+      layer.style.backgroundImage = 'url("' + url + '")';
+      layer.classList.add('loaded');
+    };
+    img.src = url;
+  }
+  setBg(pickBg());
 
-  var urlEl = document.getElementById('targetUrl');
-  var hostEl = document.getElementById('host');
-  var goBtn = document.getElementById('goBtn');
-  var backBtn = document.getElementById('backBtn');
-  var cdEl = document.getElementById('countdown');
-  var preview = document.getElementById('previewSection');
-  var input = document.getElementById('manualUrl');
-  var manualGo = document.getElementById('manualGo');
-  var hint = document.getElementById('manualHint');
-  var title = document.getElementById('pageTitle');
-  var tip = document.getElementById('pageTip');
-  var actions = document.getElementById('actions');
-
-  var currentTarget = null;
-  var countdownTimer = null;
-
-  // 解析并校验链接；仅允许 http/https
+  // 链接解析
   function parse(raw) {
     if (!raw) return null;
     raw = raw.trim();
@@ -210,96 +163,57 @@
     } catch (e) { return null; }
   }
 
-  function stopCountdown() {
-    if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
-    cdEl.innerHTML = '';
+  var urlEl = document.getElementById('targetUrl');
+  var hostEl = document.getElementById('host');
+  var goBtn = document.getElementById('goBtn');
+  var backBtn = document.getElementById('backBtn');
+  var cdEl = document.getElementById('countdown');
+
+  var rawUrl = new URLSearchParams(location.search).get('url') || '';
+  var target = parse(rawUrl);
+
+  if (target) {
+    urlEl.textContent = target.href;
+    hostEl.textContent = target.hostname;
+    goBtn.href = target.href;
+  } else {
+    urlEl.textContent = '（未提供有效链接）';
+    hostEl.textContent = '-';
+    goBtn.style.display = 'none';
   }
 
-  function startCountdown(target) {
-    if (AUTO_WAIT <= 0) return;
+  // 倒计时跳转
+  var AUTO_WAIT = 5;
+  var timer = null;
+  if (target && AUTO_WAIT > 0) {
     var left = AUTO_WAIT;
-    cdEl.innerHTML = '页面将在 <b>' + left + '</b> 秒后自动跳转';
-    countdownTimer = setInterval(function () {
+    cdEl.innerHTML = '将在 <b>' + left + '</b> 秒后自动跳转';
+    timer = setInterval(function () {
       left--;
       if (left <= 0) {
-        clearInterval(countdownTimer);
-        countdownTimer = null;
+        clearInterval(timer);
+        timer = null;
         window.location.href = target.href;
       } else {
-        cdEl.innerHTML = '页面将在 <b>' + left + '</b> 秒后自动跳转';
+        cdEl.innerHTML = '将在 <b>' + left + '</b> 秒后自动跳转';
       }
     }, 1000);
   }
 
-  // 根据目标链接刷新右侧预览
-  function setTarget(raw, fromInput) {
-    stopCountdown();
-    var u = parse(raw);
+  // 继续访问：停止倒计时
+  goBtn.addEventListener('click', function () { if (timer) { clearInterval(timer); timer = null; } });
 
-    if (!u) {
-      currentTarget = null;
-      if (!fromInput) {
-        // 初始就没有有效参数：切到「纯手动输入」模式
-        preview.style.display = 'none';
-        goBtn.style.display = 'none';
-        title.textContent = '外部链接安全跳转';
-        tip.textContent = '在下方输入要访问的网址，我们会先为你检查目标域名。';
-        backBtn.href = 'index.html';
-      } else {
-        hint.textContent = '请输入有效的网址（http/https）';
-        hint.className = 'manual-hint err';
-        preview.style.display = 'none';
-        goBtn.style.display = 'none';
-      }
-      return;
+  // 返回按钮：智能回退
+  backBtn.addEventListener('click', function () {
+    if (timer) { clearInterval(timer); timer = null; }
+    // 来源是同域则 back，否则回首页
+    var ref = document.referrer;
+    if (ref && ref.indexOf(location.hostname) > -1) {
+      history.back();
+    } else {
+      window.location.href = 'index.html';
     }
-
-    currentTarget = u;
-    hint.textContent = '✓ 已识别链接，点击「跳转」继续';
-    hint.className = 'manual-hint ok';
-    preview.style.display = '';
-    goBtn.style.display = '';
-    urlEl.textContent = u.href;
-    hostEl.textContent = u.hostname;
-    goBtn.href = u.href;
-    input.value = u.href;
-
-    if (!fromInput) {
-      // 来自 ?url= 参数，启动自动倒计时
-      startCountdown(u);
-    }
-  }
-
-  // 事件
-  input.addEventListener('input', function () {
-    setTarget(input.value, true);
   });
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') doManualGo();
-  });
-  manualGo.addEventListener('click', doManualGo);
-  goBtn.addEventListener('click', function (e) {
-    if (!currentTarget) { e.preventDefault(); return; }
-    // 手动点继续访问，不需要再倒计时
-    stopCountdown();
-  });
-
-  function doManualGo() {
-    var u = parse(input.value);
-    if (!u) {
-      hint.textContent = '请输入有效的网址（http/https）';
-      hint.className = 'manual-hint err';
-      input.focus();
-      return;
-    }
-    stopCountdown();
-    window.location.href = u.href;
-  }
-
-  // 初始化：从 ?url= 读取
-  var params = new URLSearchParams(location.search);
-  var rawUrl = params.get('url') || '';
-  setTarget(rawUrl, false);
 })();
 </script>
 </body>

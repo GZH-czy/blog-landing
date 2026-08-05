@@ -174,14 +174,29 @@
     const playIcon = playBtn.querySelector('i');
     const prevBtn = $('#musicPrev');
     const nextBtn = $('#musicNext');
+    const listToggle = $('#musicListToggle');
     const muteBtn = $('#musicMute');
     const muteIcon = muteBtn.querySelector('i');
     const seek = $('#musicSeek');
     const volume = $('#musicVolume');
     const curEl = $('#musicCur');
     const durEl = $('#musicDur');
+    const listWrap = $('#musicListWrap');
+    const listEl = $('#musicList');
 
     let idx = 0;
+    let listOpen = false;
+
+    // 预加载图片，避免闪烁
+    function preloadImage(src) {
+      return new Promise(function (resolve) {
+        if (!src) { resolve(false); return; }
+        var img = new Image();
+        img.onload = function () { resolve(true); };
+        img.onerror = function () { resolve(false); };
+        img.src = src;
+      });
+    }
 
     function fmt(s) {
       if (!isFinite(s)) return '0:00';
@@ -229,21 +244,64 @@
       }
     }
 
-    function load(i, autoplay) {
+    // 渲染播放列表
+    function renderList() {
+      listEl.innerHTML = '';
+      songs.forEach(function (s, i) {
+        var li = document.createElement('li');
+        li.className = 'music-list-item' + (i === idx ? ' active' : '');
+        li.dataset.index = i;
+        li.innerHTML =
+          '<span class="music-list-idx">' + (i + 1) + '</span>' +
+          '<span class="music-list-info">' +
+            '<span class="music-list-title">' + (s.title || '未知') + '</span>' +
+            '<span class="music-list-artist">' + (s.artist || '') + '</span>' +
+          '</span>';
+        li.addEventListener('click', function () {
+          load(i, true);
+          toggleList(false);
+        });
+        listEl.appendChild(li);
+      });
+    }
+
+    // 切换播放列表显示
+    function toggleList(force) {
+      listOpen = (typeof force === 'boolean') ? force : !listOpen;
+      listWrap.hidden = !listOpen;
+      panel.classList.toggle('has-list', listOpen);
+    }
+
+    async function load(i, autoplay) {
       idx = (i + songs.length) % songs.length;
-      const s = songs[idx];
+      var s = songs[idx];
       titleEl.textContent = s.title || '未知歌曲';
       artistEl.textContent = s.artist || '';
       updateId(s);
 
-      audio.src = s.url;
-      if (s.cover) {
+      // 先预加载封面，加载完再赋值，避免闪烁
+      var coverLoaded = await preloadImage(s.cover);
+      if (coverLoaded) {
         cover.src = s.cover;
         fabCover.src = s.cover;
         fabCover.classList.add('loaded');
+        cover.style.opacity = '1';
       } else {
         fabCover.classList.remove('loaded');
+        cover.style.opacity = '0';
       }
+
+      // 更新列表高亮
+      if (listEl.children.length) {
+        Array.prototype.forEach.call(listEl.children, function (li, j) {
+          li.classList.toggle('active', j === idx);
+        });
+        // 滚动到当前项
+        var active = listEl.children[idx];
+        if (active) active.scrollIntoView({ block: 'nearest' });
+      }
+
+      audio.src = s.url;
       audio.load();
       if (autoplay) audio.play().catch(() => showTip('浏览器阻止了自动播放，请手动点击'));
     }
@@ -300,9 +358,12 @@
     fab.addEventListener('click', () => root.classList.toggle('open'));
     prevBtn.addEventListener('click', () => load(idx - 1, !audio.paused));
     nextBtn.addEventListener('click', () => load(idx + 1, !audio.paused));
+    listToggle.addEventListener('click', () => toggleList());
 
     audio.volume = m.defaultVolume != null ? m.defaultVolume : 0.7;
     volume.value = audio.volume;
+
+    renderList();
     load(0, !!m.autoplay);
   }
 

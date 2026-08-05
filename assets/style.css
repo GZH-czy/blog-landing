@@ -322,13 +322,15 @@ body {
   visibility: hidden;
   transform: translateY(-8px) scale(.98);
   transform-origin: top right;
-  transition: opacity .25s ease, transform .25s ease, visibility .25s;
+  transition: opacity .25s ease, transform .25s ease, visibility .25s, width .3s ease;
 }
+.music-panel.has-list { width: 300px; }
 .music.open .music-panel {
   opacity: 1;
   visibility: visible;
   transform: translateY(0) scale(1);
 }
+.music-main { width: 100%; }
 .music-cover {
   display: block;
   width: 100%;
@@ -337,6 +339,8 @@ body {
   border-radius: 10px;
   margin-bottom: 12px;
   background: rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity .4s ease;
 }
 .music-info { text-align: center; margin-bottom: 12px; }
 .music-title {
@@ -409,6 +413,66 @@ body {
   border: none;
 }
 .music-volume { width: 56px; }
+
+/* ---------- 播放列表 ---------- */
+.music-list-wrap {
+  margin-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.music-list-header {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+.music-list { list-style: none; }
+.music-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.music-list-item:hover { background: rgba(255,255,255,0.08); }
+.music-list-item.active { background: rgba(124,196,255,0.2); }
+.music-list-idx {
+  width: 18px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  flex-shrink: 0;
+}
+.music-list-item.active .music-list-idx { color: var(--accent); }
+.music-list-info {
+  min-width: 0;
+  flex: 1;
+}
+.music-list-title {
+  display: block;
+  font-size: 12px;
+  color: var(--text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.music-list-item.active .music-list-title { color: #fff; }
+.music-list-artist {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 滚动条 */
+.music-list-wrap::-webkit-scrollbar { width: 4px; }
+.music-list-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
 
 /* 原生 range 美化 */
 .music-seek, .music-volume {
