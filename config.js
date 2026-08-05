@@ -102,22 +102,35 @@ window.SITE_CONFIG = {
   },
 
   /* ---------- 右上角音乐播放器 ----------
-     在 songs 数组里增删歌曲即可。
-     url 支持 mp3 / flac / wav 等浏览器可播放的直链；
-     cover 为封面图 URL，可不填。
+     两种来源可同时启用，会合并到一个播放列表：
+       1) 网易云歌单/单曲（netease）——填 ID 即可，自动拉取歌名/歌手/封面
+       2) 自定义歌曲（songs）——自己填 mp3 直链
   */
   music: {
     enable: true,
     autoplay: false,        // 浏览器通常会禁止带声音自动播放，建议保持 false
     defaultVolume: 0.7,     // 0~1
+
+    // 网易云音乐
+    netease: {
+      enable: true,
+      // Meting 兼容 API（公共服务可能不稳，建议自建：https://github.com/injahow/meting-api）
+      api: 'https://api.injahow.cn/meting/',
+      id: '8492133976',          // 歌单 ID 或单曲 ID
+      type: 'playlist',          // playlist = 歌单，song = 单曲
+      // API 失败时是否用网易云官方外链做兜底播放（部分 VIP 歌曲可能只有片段）
+      fallbackOuter: true
+    },
+
+    // 自定义歌曲（会追加到网易云歌单后面）
     songs: [
-      {
-        title: '示例歌曲',
-        artist: '歌手名',
-        url: 'https://www.w3schools.com/html/horse.mp3',
-        cover: 'https://picsum.photos/seed/music1/200'
-      }
-      // 继续添加：{ title, artist, url, cover }
+      // {
+      //   title: '示例歌曲',
+      //   artist: '歌手名',
+      //   url: 'https://example.com/song.mp3',
+      //   cover: 'https://example.com/cover.jpg',
+      //   nid: '123456'           // 可选：网易云 ID，填了会在播放器显示
+      // }
     ]
   },
 

@@ -137,22 +137,39 @@
   }
 
   /* ---------- 音乐播放器 ---------- */
-  function initMusic() {
+  async function initMusic() {
     const m = CFG.music;
     const root = $('#musicPlayer');
     if (!m || !m.enable || !root) return;
-    const songs = m.songs || [];
-    if (!songs.length) return;
+
+    // 合并歌单：先网易云，后自定义
+    let songs = [];
+    const netease = m.netease;
+    if (netease && netease.enable && netease.id) {
+      try {
+        const fetched = await fetchNetease(netease);
+        if (fetched.length) songs = songs.concat(fetched);
+      } catch (e) {
+        console.warn('[music] 网易云歌单加载失败：', e);
+        showTip('网易云歌单加载失败，改用本地列表');
+      }
+    }
+    songs = songs.concat(m.songs || []);
+
+    if (!songs.length) {
+      console.warn('[music] 没有可用的歌曲');
+      return;
+    }
     root.hidden = false;
 
     const audio = $('#musicAudio');
     const fab = $('#musicFab');
     const fabCover = $('#musicFabCover');
-    const fabIcon = fab.querySelector('.music-fab-icon');
     const panel = $('#musicPanel');
     const cover = $('#musicCover');
     const titleEl = $('#musicTitle');
     const artistEl = $('#musicArtist');
+    const idEl = $('#musicId');
     const playBtn = $('#musicPlay');
     const playIcon = playBtn.querySelector('i');
     const prevBtn = $('#musicPrev');
@@ -168,32 +185,83 @@
 
     function fmt(s) {
       if (!isFinite(s)) return '0:00';
-      const m = Math.floor(s / 60);
-      const sec = Math.floor(s % 60);
-      return m + ':' + (sec < 10 ? '0' + sec : sec);
+      const mm = Math.floor(s / 60);
+      const ss = Math.floor(s % 60);
+      return mm + ':' + (ss < 10 ? '0' + ss : ss);
+    }
+
+    // 拉取网易云（Meting 兼容 API 返回 JSON 数组）
+    async function fetchNetease(cfg) {
+      const url = cfg.api.replace(/\/+$/, '') +
+        `?server=netease&type=${cfg.type}&id=${encodeURIComponent(cfg.id)}`;
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      const res = await fetch(url, { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const list = await res.json();
+      if (!Array.isArray(list)) throw new Error('返回格式错误');
+      return list.map((it) => {
+        // Meting 接口返回的歌曲 ID 藏在 url 的 ?id= 参数里
+        let nid = it.id ? String(it.id) : null;
+        if (!nid && it.url) {
+          try { nid = new URL(it.url, location.href).searchParams.get('id'); } catch (e) {}
+        }
+        return {
+          title: it.name || it.title || '未知歌曲',
+          artist: Array.isArray(it.artist) ? it.artist.join(' / ') : (it.artist || ''),
+          url: it.url,
+          cover: it.pic || it.cover,
+          nid: nid || null
+        };
+      }).filter((s) => s.url);
+    }
+
+    function updateId(song) {
+      if (song.nid) {
+        idEl.textContent = 'ID: ' + song.nid;
+        idEl.href = `https://music.163.com/#/song?id=${encodeURIComponent(song.nid)}`;
+        idEl.hidden = false;
+      } else {
+        idEl.hidden = true;
+        idEl.removeAttribute('href');
+      }
     }
 
     function load(i, autoplay) {
       idx = (i + songs.length) % songs.length;
       const s = songs[idx];
-      audio.src = s.url;
       titleEl.textContent = s.title || '未知歌曲';
       artistEl.textContent = s.artist || '';
+      updateId(s);
+
+      audio.src = s.url;
       if (s.cover) {
         cover.src = s.cover;
         fabCover.src = s.cover;
         fabCover.classList.add('loaded');
-        cover.style.display = '';
       } else {
         fabCover.classList.remove('loaded');
       }
       audio.load();
-      if (autoplay) audio.play().catch(() => {});
+      if (autoplay) audio.play().catch(() => showTip('浏览器阻止了自动播放，请手动点击'));
     }
 
-    function togglePlay() {
-      if (audio.paused) audio.play().catch(() => showTip('浏览器阻止了自动播放，请手动点击'));
-      else audio.pause();
+    function nextOnError() {
+      // 错误时尝试官方外链兜底（仅网易云歌曲）
+      const s = songs[idx];
+      if (s && s.nid && netease && netease.fallbackOuter) {
+        const fallback = `https://music.163.com/song/media/outer/url?id=${encodeURIComponent(s.nid)}.mp3`;
+        if (audio.src !== fallback) {
+          console.warn('[music] 主链失败，尝试官方外链：', s.nid);
+          audio.src = fallback;
+          audio.load();
+          audio.play().catch(() => load(idx + 1, true));
+          return;
+        }
+      }
+      showTip('当前歌曲无法播放，已跳到下一首');
+      load(idx + 1, true);
     }
 
     audio.addEventListener('play', () => {
@@ -213,7 +281,7 @@
       curEl.textContent = fmt(audio.currentTime);
       if (audio.duration) seek.value = audio.currentTime;
     });
-    audio.addEventListener('error', () => showTip('当前歌曲加载失败，已跳到下一首'));
+    audio.addEventListener('error', nextOnError);
 
     seek.addEventListener('input', () => { audio.currentTime = seek.value; });
     volume.addEventListener('input', () => {
@@ -224,7 +292,10 @@
       audio.muted = !audio.muted;
       muteIcon.className = audio.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
     });
-    playBtn.addEventListener('click', togglePlay);
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) audio.play().catch(() => showTip('浏览器阻止了自动播放，请手动点击'));
+      else audio.pause();
+    });
     fab.addEventListener('click', () => root.classList.toggle('open'));
     prevBtn.addEventListener('click', () => load(idx - 1, !audio.paused));
     nextBtn.addEventListener('click', () => load(idx + 1, !audio.paused));

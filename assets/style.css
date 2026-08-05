@@ -351,6 +351,24 @@ body {
   color: var(--text-muted);
   margin-top: 2px;
 }
+.music-id {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 1px 8px;
+  font-size: 10px;
+  color: var(--text-soft);
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  transition: background .2s, color .2s;
+}
+.music-id:hover {
+  background: var(--accent);
+  color: #10202e;
+  border-color: transparent;
+}
+.music-id::before { content: '网易云 '; }
 .music-progress {
   display: flex;
   align-items: center;
