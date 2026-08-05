@@ -192,8 +192,9 @@
 
     // 拉取网易云（Meting 兼容 API 返回 JSON 数组）
     async function fetchNetease(cfg) {
-      const url = cfg.api.replace(/\/+$/, '') +
-        `?server=netease&type=${cfg.type}&id=${encodeURIComponent(cfg.id)}`;
+      // 注意：必须保留 api 结尾的斜杠，否则部分服务端会 301 重定向导致跨域失败
+      const base = cfg.api.endsWith('/') ? cfg.api : cfg.api + '/';
+      const url = base + `?server=netease&type=${cfg.type}&id=${encodeURIComponent(cfg.id)}`;
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 8000);
       const res = await fetch(url, { signal: ctrl.signal });

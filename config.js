@@ -114,8 +114,8 @@ window.SITE_CONFIG = {
     // 网易云音乐
     netease: {
       enable: true,
-      // Meting 兼容 API（公共服务可能不稳，建议自建：https://github.com/injahow/meting-api）
-      api: 'https://api.injahow.cn/meting/',
+      // 自建 Meting API（Vercel 部署）
+      api: 'https://meting-api.gzh-czy.cc.cd/api/meting',
       id: '8492133976',          // 歌单 ID 或单曲 ID
       type: 'playlist',          // playlist = 歌单，song = 单曲
       // API 失败时是否用网易云官方外链做兜底播放（部分 VIP 歌曲可能只有片段）
