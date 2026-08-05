@@ -28,7 +28,8 @@
     return r.page + '?url=' + encodeURIComponent(url);
   }
 
-  /* ---------- 背景图 ---------- */
+  /* ---------- 背景（支持图片/视频） ---------- */
+  const VIDEO_EXTS = /\.(mp4|webm|ogg|mov)(\?|$)/i;
   let bgIndex = 0;
   function pickBackground() {
     const list = CFG.backgrounds || [];
@@ -36,17 +37,37 @@
     bgIndex = Math.floor(Math.random() * list.length);
     return list[bgIndex];
   }
+  function isVideo(url) { return VIDEO_EXTS.test(url); }
 
   function setBackground(url) {
+    if (!url) return;
     const layer = $('#bgLayer');
-    if (!layer || !url) return;
-    const img = new Image();
-    img.onload = () => {
-      layer.style.backgroundImage = `url("${url}")`;
-      layer.classList.add('loaded');
-    };
-    img.onerror = () => showTip('背景图加载失败');
-    img.src = url;
+    const video = $('#bgVideo');
+
+    if (isVideo(url)) {
+      // 视频背景
+      layer.classList.remove('loaded');
+      video.src = url;
+      video.load();
+      video.onloadeddata = () => {
+        video.classList.add('loaded');
+      };
+      video.onerror = () => { showTip('背景视频加载失败'); video.classList.remove('loaded'); };
+    } else {
+      // 图片背景
+      video.classList.remove('loaded');
+      video.removeAttribute('src');
+      video.load();
+      if (layer) {
+        const img = new Image();
+        img.onload = () => {
+          layer.style.backgroundImage = `url("${url}")`;
+          layer.classList.add('loaded');
+        };
+        img.onerror = () => showTip('背景图加载失败');
+        img.src = url;
+      }
+    }
   }
 
   function switchBackground() {
@@ -54,7 +75,9 @@
     if (list.length <= 1) return;
     bgIndex = (bgIndex + 1) % list.length;
     const layer = $('#bgLayer');
+    const video = $('#bgVideo');
     layer.classList.remove('loaded');
+    video.classList.remove('loaded');
     setTimeout(() => setBackground(list[bgIndex]), 300);
   }
 
