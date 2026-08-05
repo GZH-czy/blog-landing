@@ -131,7 +131,13 @@ window.SITE_CONFIG = {
       //   cover: 'https://example.com/cover.jpg',
       //   nid: '123456'           // 可选：网易云 ID，填了会在播放器显示
       // }
-    ]
+       {
+         title: '示例歌曲',
+         artist: '歌手名',
+         url: 'https://music.163.com/#/song?id=536154344',
+         cover: 'http://p2.music.126.net/09RDXHTPLSDU8SayrYq9Ig==/109951170245472485.jpg?param=130y130',
+         nid: '536154344'           // 可选：网易云 ID，填了会在播放器显示
+       }
   },
 
   /* ---------- 页脚 ---------- */
