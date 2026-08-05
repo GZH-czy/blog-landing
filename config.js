@@ -95,8 +95,29 @@ window.SITE_CONFIG = {
     whitelist: [
       'love.gzh-czy.cc.cd',
       '.gzh-czy.cc.cd',
-      'github.com',
-      '.github.com'
+      'gzh-czy.github.io',
+      '.github.com',
+      'github.com'
+    ]
+  },
+
+  /* ---------- 右上角音乐播放器 ----------
+     在 songs 数组里增删歌曲即可。
+     url 支持 mp3 / flac / wav 等浏览器可播放的直链；
+     cover 为封面图 URL，可不填。
+  */
+  music: {
+    enable: true,
+    autoplay: false,        // 浏览器通常会禁止带声音自动播放，建议保持 false
+    defaultVolume: 0.7,     // 0~1
+    songs: [
+      {
+        title: '示例歌曲',
+        artist: '歌手名',
+        url: 'https://www.w3schools.com/html/horse.mp3',
+        cover: 'https://picsum.photos/seed/music1/200'
+      }
+      // 继续添加：{ title, artist, url, cover }
     ]
   },
 

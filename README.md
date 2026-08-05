@@ -98,9 +98,52 @@ redirect: {
 - 一言（默认调用 hitokoto.cn，自带兜底句子）
 - 社交图标栏（FA 图标 / 自定义图片）
 - 进入博客主按钮
-- 链接安全中转页
+- **右上角音乐播放器**：自定义歌单，增删歌曲改 `config.js` 的 `music.songs` 即可
+- 链接安全中转页（支持手动输入/粘贴链接自动填充）
 - 响应式适配手机
 - 支持 `prefers-reduced-motion` 无障碍偏好
+
+## 音乐播放器配置
+
+在 `config.js` 中：
+
+```js
+music: {
+  enable: true,
+  autoplay: false,
+  defaultVolume: 0.7,
+  songs: [
+    {
+      title: '歌曲名',
+      artist: '歌手',
+      url: 'https://直链.mp3',
+      cover: 'https://封面.jpg'
+    }
+  ]
+}
+```
+
+增删 `songs` 数组即可，上一首/下一首按钮自动切换。
+
+## 接入到 Hexo（Butterfly）博客
+
+让博客内所有站外链接自动走安全中转页，**只需在 butterfly 配置注入一行脚本**，无需改博客代码。
+
+编辑 `GZH-czy/_config.butterfly.yml` 的 `inject.bottom` 段，在最后加上**两行**（注意顺序：先配置，后引入脚本）：
+
+```yaml
+  # 外链安全中转
+  - <script>window.SAFE_REDIRECT_CONFIG = { goUrl: 'https://gzh-czy.github.io/blog-landing/go.html', whitelist: ['love.gzh-czy.cc.cd', '.gzh-czy.cc.cd', 'gzh-czy.github.io'] };</script>
+  - <script defer src="https://gzh-czy.github.io/blog-landing/assets/external-redirect.js"></script>
+```
+
+脚本特性：
+- 自动捕获页面内所有 `a[href]`，把外链改写成 `go.html?url=...`
+- 同源链接、白名单域名不处理
+- 支持 PJAX 动态加载页面（butterfly 默认开启），通过 `MutationObserver` + `pjax:complete` 双重监听新插入的链接
+- 不依赖任何库，体积 ~3KB
+
+如果你给中转页绑了自定义域名，把上面两个 URL 换成你的域名即可。
 
 ## 浏览器支持
 
