@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>安全跳转 · 即将离开</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                   "Microsoft YaHei", sans-serif;
+      color: #e8eef5;
+      background: linear-gradient(135deg, #1a1f2e 0%, #0f1420 100%);
+    }
+    .box {
+      width: 100%;
+      max-width: 520px;
+      padding: 36px 32px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: in .5s ease both;
+    }
+    @keyframes in { from { opacity: 0; transform: translateY(16px);} to {opacity:1; transform:none;} }
+    .warn-icon {
+      width: 56px; height: 56px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: rgba(255,180,60,0.15);
+      color: #ffb43c;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+    }
+    h1 { font-size: 20px; text-align: center; margin-bottom: 8px; }
+    .tip { text-align: center; font-size: 13px; color: #9aa7b8; margin-bottom: 22px; }
+    .url-box {
+      padding: 14px 16px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      font-size: 13px;
+      word-break: break-all;
+      color: #7cc4ff;
+      margin-bottom: 12px;
+      user-select: all;
+    }
+    .host-line {
+      font-size: 12px;
+      color: #9aa7b8;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .host-line b { color: #ffb43c; }
+    .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      padding: 11px 28px;
+      border-radius: 999px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary {
+      color: #10202e;
+      background: linear-gradient(135deg, #fff 0%, #cfe8ff 100%);
+      box-shadow: 0 6px 18px rgba(124,196,255,.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-ghost {
+      color: #cfd8e3;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.16); }
+    .countdown { font-size: 12px; color: #9aa7b8; text-align: center; margin-top: 18px; }
+    .countdown b { color: #7cc4ff; }
+    .error {
+      text-align: center;
+      color: #ff7a7a;
+      font-size: 14px;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div id="content">
+      <div class="warn-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h1>您即将离开本站</h1>
+      <p class="tip">下方为外部链接，请确认其安全性后再访问。</p>
+      <div class="url-box" id="targetUrl"></div>
+      <div class="host-line">目标域名：<b id="host">-</b></div>
+      <div class="actions">
+        <a class="btn btn-primary" id="goBtn" href="#" rel="noopener noreferrer">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> 继续访问
+        </a>
+        <a class="btn btn-ghost" href="javascript:history.back()">
+          <i class="fa-solid fa-arrow-left"></i> 返回
+        </a>
+      </div>
+      <div class="countdown" id="countdown"></div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+  var params = new URLSearchParams(location.search);
+  var raw = params.get('url') || '';
+  var AUTO_WAIT = 5; // 自动跳转秒数；如需关闭设为 0
+
+  var urlEl = document.getElementById('targetUrl');
+  var hostEl = document.getElementById('host');
+  var btn = document.getElementById('goBtn');
+  var cdEl = document.getElementById('countdown');
+
+  // 仅允许 http/https 协议，防 javascript: / data: 等
+  var target = null;
+  try {
+    target = new URL(raw, location.href);
+    if (target.protocol !== 'http:' && target.protocol !== 'https:') target = null;
+  } catch (e) { target = null; }
+
+  if (!target || !raw) {
+    document.getElementById('content').innerHTML =
+      '<div class="warn-icon"><i class="fa-solid fa-circle-question"></i></div>' +
+      '<div class="error">未提供有效的跳转地址。</div>' +
+      '<div class="actions"><a class="btn btn-primary" href="index.html">返回首页</a></div>';
+    return;
+  }
+
+  urlEl.textContent = target.href;
+  hostEl.textContent = target.hostname;
+  btn.href = target.href;
+
+  if (AUTO_WAIT > 0) {
+    var left = AUTO_WAIT;
+    cdEl.innerHTML = '页面将在 <b>' + left + '</b> 秒后自动跳转';
+    var timer = setInterval(function () {
+      left--;
+      if (left <= 0) {
+        clearInterval(timer);
+        window.location.href = target.href;
+      } else {
+        cdEl.innerHTML = '页面将在 <b>' + left + '</b> 秒后自动跳转';
+      }
+    }, 1000);
+  }
+})();
+</script>
+</body>
+</html>

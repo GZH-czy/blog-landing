@@ -1,0 +1,110 @@
+/**
+ * ============================================================
+ *  博客中转页 · 站点配置
+ *  修改本文件即可定制整站，无需改动 HTML / CSS / JS
+ * ============================================================
+ */
+window.SITE_CONFIG = {
+  /* ---------- 个人信息 ---------- */
+  profile: {
+    name: '子涵',
+    subtitle: '生活明朗，万物可爱',
+    avatar: 'https://picx.zhimg.com/80/v2-5cad506ea105dd3da8f4000b0f9bd3c0_720w.webp?source=1def8aca',
+    // 头像下方的一句话简介（支持数组随机轮播）
+    descriptions: [
+      '一个有趣的博客 ✨',
+      '记录代码与生活',
+      '今天也要开心呀～'
+    ]
+  },
+
+  /* ---------- 时钟问候 ---------- */
+  greeting: {
+    enable: true,
+    // 时间段问候语，按小时划分
+    rules: [
+      { start: 0, end: 5, text: '夜深了，注意休息 🌙' },
+      { start: 6, end: 11, text: '早上好呀 ☀️' },
+      { start: 12, end: 13, text: '中午好，吃饭了吗 🍚' },
+      { start: 14, end: 17, text: '下午好 🍵' },
+      { start: 18, end: 22, text: '晚上好 🌆' },
+      { start: 23, end: 23, text: '夜深了，注意休息 🌙' }
+    ]
+  },
+
+  /* ---------- 进入博客按钮 ---------- */
+  enterBlog: {
+    text: '进入博客',
+    url: 'https://love.gzh-czy.cc.cd/'
+  },
+
+  /* ---------- 社交链接 ----------
+     icon 可填：
+       - Font Awesome 类名，如 "fab fa-github"（需在 index.html 引入 FA）
+       - 或任意图片 URL
+  */
+  socials: [
+    { icon: 'fab fa-github',   url: 'https://github.com/GZH-czy',    title: 'GitHub',   color: '#ffffff' },
+    { icon: 'fa-solid fa-envelope', url: 'mailto:gzh@example.com',   title: '邮箱',     color: '#ea4335' },
+    { icon: 'fa-solid fa-rss', url: 'https://love.gzh-czy.cc.cd/atom.xml', title: 'RSS', color: '#ffa500' }
+    // 可继续添加，例如 B站：{ icon: 'fa-brands fa-bilibili', url: '...', title: '哔哩哔哩', color: '#00a1d6' }
+  ],
+
+  /* ---------- 背景图 ----------
+     可填多张，每次刷新随机一张。支持本地路径（如 "assets/bg/1.jpg"）或在线 URL。
+  */
+  backgrounds: [
+    'https://img.0v0.my/backgrounds/d1.webp',
+    'https://img.0v0.my/backgrounds/d2.webp',
+    'https://img.0v0.my/backgrounds/d3.webp',
+    'https://img.0v0.my/backgrounds/l1.webp',
+    'https://img.0v0.my/backgrounds/l2.webp',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80',
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80'
+  ],
+
+  /* ---------- 背景遮罩（0~1，越大背景越暗、文字越清晰） ---------- */
+  backgroundMask: 0.35,
+
+  /* ---------- 一言 / 随机句子 ----------
+     留空数组 [] 则不显示。也可配置远程 API。
+  */
+  hitokoto: {
+    enable: true,
+    // 内置句子（API 失败时兜底；API 成功时优先用远程）
+    fallback: [
+      '愿你成为自己的太阳，无需凭借谁的光。',
+      '生活明朗，万物可爱。',
+      '人生没有白走的路，每一步都算数。'
+    ],
+    // 一言 API（返回 JSON，含 hitokoto / from 字段）；不想用就设为 null
+    api: 'https://v1.hitokoto.cn/?c=i&c=k',
+    // 自动轮播间隔（毫秒），设 0 则不轮播
+    interval: 8000
+  },
+
+  /* ---------- 链接安全中转 ----------
+     index.html 等页面里所有外部链接，是否统一走 go.html 中转页。
+     白名单内的域名不中转（直接跳转）。
+  */
+  redirect: {
+    enable: true,
+    // 中转页路径（相对于站点根目录）
+    page: 'go.html',
+    // 这些域名直接跳转，不提示；支持子域通配（前缀 '.' 表示含所有子域）
+    whitelist: [
+      'love.gzh-czy.cc.cd',
+      '.gzh-czy.cc.cd',
+      'github.com',
+      '.github.com'
+    ]
+  },
+
+  /* ---------- 页脚 ---------- */
+  footer: {
+    // 可用 {year} 占位
+    text: '© {year} 子涵 · Built with ❤️',
+    // 备案号等，没有就留空字符串
+    beian: ''
+  }
+};

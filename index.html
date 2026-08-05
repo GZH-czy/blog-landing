@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="子涵的个人中转页 · 生活明朗，万物可爱" />
+  <meta name="theme-color" content="#0f1420" />
+  <title>子涵 · 中转页</title>
+  <link rel="icon" href="https://picx.zhimg.com/80/v2-cf221ada6f0705db976d2f5d44b74f10_720w.webp?source=1def8aca" />
+
+  <!-- Font Awesome 图标 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+  <!-- 背景层 -->
+  <div class="bg-layer" id="bgLayer"></div>
+  <div class="bg-mask"></div>
+
+  <!-- 顶部提示 -->
+  <div class="loading-tip" id="loadingTip"></div>
+
+  <!-- 主卡片 -->
+  <main class="stage">
+    <section class="card">
+      <img class="avatar" id="avatar" src="" alt="avatar" width="112" height="112" />
+      <h1 class="name" id="name"></h1>
+      <p class="subtitle" id="subtitle"></p>
+
+      <p class="greeting" id="greeting"></p>
+      <div class="clock" id="clock">--:--:--</div>
+
+      <p class="description" id="description"></p>
+
+      <blockquote class="hitokoto" id="hitokoto"></blockquote>
+
+      <nav class="socials" id="socials" aria-label="社交链接"></nav>
+
+      <a class="enter-btn" id="enterBtn" href="#" rel="noopener">进入博客</a>
+    </section>
+  </main>
+
+  <!-- 切换背景 -->
+  <button class="bg-switch" id="bgSwitch" title="换一张背景" aria-label="切换背景图">
+    <i class="fa-solid fa-shuffle"></i>
+  </button>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <span id="footerText"></span>
+  </footer>
+
+  <!-- 配置必须先加载 -->
+  <script src="config.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
