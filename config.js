@@ -46,7 +46,8 @@ window.SITE_CONFIG = {
   socials: [
     { icon: 'fab fa-github',   url: 'https://github.com/GZH-czy',    title: 'GitHub',   color: '#ffffff' },
     { icon: 'fa-solid fa-envelope', url: 'mailto:gzh@example.com',   title: '邮箱',     color: '#ea4335' },
-    { icon: 'fa-solid fa-rss', url: 'https://love.gzh-czy.cc.cd/atom.xml', title: 'RSS', color: '#ffa500' }
+    { icon: 'fa-solid fa-rss', url: 'https://love.gzh-czy.cc.cd/atom.xml', title: 'RSS', color: '#ffa500' },
+    { icon: 'fa-brands fa-bilibili', url: 'https://space.bilibili.com/171675719?spm_id_from=333.1007.0.0', title: 'B站', color: '#00a1d6' }
     // 可继续添加，例如 B站：{ icon: 'fa-brands fa-bilibili', url: '...', title: '哔哩哔哩', color: '#00a1d6' }
   ],
 
@@ -60,7 +61,8 @@ window.SITE_CONFIG = {
     'https://img.0v0.my/backgrounds/l1.webp',
     'https://img.0v0.my/backgrounds/l2.webp',
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80',
-    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80'
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80',
+    'https://imgbed.gzh-czy.cc.cd/20260805220654725.mp4'
   ],
 
   /* ---------- 背景遮罩（0~1，越大背景越暗、文字越清晰） ---------- */
