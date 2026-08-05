@@ -145,19 +145,31 @@
     // 合并歌单：先网易云，后自定义
     let songs = [];
     const netease = m.netease;
+    let neteaseLoaded = false;
     if (netease && netease.enable && netease.id) {
       try {
         const fetched = await fetchNetease(netease);
-        if (fetched.length) songs = songs.concat(fetched);
+        if (fetched.length) {
+          songs = songs.concat(fetched);
+          neteaseLoaded = true;
+        } else {
+          showTip('网易云歌单为空，已切换本地列表');
+        }
       } catch (e) {
         console.warn('[music] 网易云歌单加载失败：', e);
-        showTip('网易云歌单加载失败，改用本地列表');
+        showTip('网易云歌单加载失败，已切换本地列表');
       }
     }
-    songs = songs.concat(m.songs || []);
+    // 本地歌曲兜底（无论网易云成功与否都追加，网易云失败时作为唯一来源）
+    const localSongs = (m.songs || []).filter(s => s && s.url);
+    if (localSongs.length) {
+      songs = songs.concat(localSongs);
+    }
 
     if (!songs.length) {
-      console.warn('[music] 没有可用的歌曲');
+      console.warn('[music] 没有可用的歌曲（网易云歌单为空且本地歌曲为空）');
+      // 两者都为空时给出明确提示，不显示播放器
+      showTip('播放器初始化失败：歌单为空且无本地歌曲');
       return;
     }
     root.hidden = false;
