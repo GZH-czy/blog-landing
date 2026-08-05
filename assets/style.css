@@ -300,8 +300,9 @@ body {
   display: none;
 }
 .music-fab-cover.loaded { display: block; }
+/* 有封面时隐藏图标；封面旋转仅在播放时 */
+.music-fab:has(.music-fab-cover.loaded) .music-fab-icon { display: none; }
 .music-fab-icon { font-size: 18px; }
-.music-fab.playing .music-fab-cover.loaded ~ .music-fab-icon { display: none; }
 .music-fab.playing .music-fab-cover { animation: spin 8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
