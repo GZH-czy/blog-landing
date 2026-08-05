@@ -116,7 +116,7 @@ window.SITE_CONFIG = {
       enable: true,
       // 自建 Meting API（Vercel 部署）
       api: 'https://meting-api.gzh-czy.cc.cd/api/meting',
-      id: '8492133976',          // 歌单 ID 或单曲 ID
+      id: '2780458004',          // 歌单 ID 或单曲 ID
       type: 'playlist',          // playlist = 歌单，song = 单曲
       // API 失败时是否用网易云官方外链做兜底播放（部分 VIP 歌曲可能只有片段）
       fallbackOuter: true
