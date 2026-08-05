@@ -138,6 +138,7 @@ window.SITE_CONFIG = {
          cover: 'http://p2.music.126.net/09RDXHTPLSDU8SayrYq9Ig==/109951170245472485.jpg?param=130y130',
          nid: '536154344'           // 可选：网易云 ID，填了会在播放器显示
        }
+       ]
   },
 
   /* ---------- 页脚 ---------- */
