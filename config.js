@@ -153,7 +153,7 @@ window.SITE_CONFIG = {
     // 侧边栏空间有限，建议 4~6 个
     // 手动置顶/补充的仓库（会与 API 结果合并，排在最前）
     pinned: [
-      // { name: 'blog-landing', description: '博客中转页', url: 'https://github.com/GZH-czy/blog-landing', language: 'JavaScript', stars: 0 }
+       { name: 'blog-landing', description: '博客中转页', url: 'https://github.com/GZH-czy/blog-landing', language: 'JavaScript', stars: 0 }
     ]
   },
 
