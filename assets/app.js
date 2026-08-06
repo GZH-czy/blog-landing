@@ -563,29 +563,22 @@
     }));
   }
 
-  // 博客碎碎念（预留接口，Butterfly timeline 页面）
+  // 博客碎碎念（JSON 接口）
   async function fetchBlogTimeline(cfg) {
     if (!cfg.url) return [];
-    // 注意：跨域限制，建议通过自建代理或 CORS proxy
-    // 示例：返回空数组，实际使用时接入代理
-    console.info('[memos] blog 数据源需要配置 CORS 代理，当前为空');
-    return [];
-    /* 实际实现示例（需代理）：
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 8000);
     const res = await fetch(cfg.url, { signal: ctrl.signal });
     clearTimeout(timer);
     if (!res.ok) return [];
-    const html = await res.text();
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    const items = [];
-    doc.querySelectorAll('.timeline-item').forEach(el => {
-      const date = el.querySelector('.timeline-item-title')?.textContent?.trim() || '';
-      const content = el.querySelector('.timeline-item-content')?.textContent?.trim() || '';
-      if (content) items.push({ type: 'blog', date, content, tag: '博客' });
-    });
-    return items;
-    */
+    const data = await res.json();
+    const list = Array.isArray(data) ? data : (data.items || []);
+    return list.map(it => ({
+      type: 'blog',
+      date: it.date || it.time || '',
+      content: it.content || it.text || it.message || '',
+      tag: it.tag || '博客'
+    })).filter(it => it.content);
   }
 
   function escapeHtml(s) {

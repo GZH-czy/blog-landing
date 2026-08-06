@@ -172,11 +172,9 @@ window.SITE_CONFIG = {
     // 数据源配置（可扩展）
     sources: [
       // 手动数据（默认启用）
-      // { type: 'manual' },
-      // GitHub 提交记录（取消注释并配置即可启用）
-      // { type: 'github', username: 'GZH-czy', repo: 'GZH-czy.github.io', limit: 5 },
-      // 博客碎碎念（取消注释并配置即可启用）
-       { type: 'blog', url: 'https://love.gzh-czy.cc.cd/timeline/' },
+      { type: 'manual' },
+      // 博客碎碎念 JSON（推荐：在博客 source/ 下放 timeline.json）
+      { type: 'blog', url: 'https://love.gzh-czy.cc.cd/timeline.json' },
     ],
     // 手动维护的数据（sources 含 manual 时生效）
     items: [
