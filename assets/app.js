@@ -563,16 +563,17 @@
     }));
   }
 
-  // 博客碎碎念（JSON 接口）
+  // 博客碎碎念（通过代理抓取）
   async function fetchBlogTimeline(cfg) {
     if (!cfg.url) return [];
+    const proxy = (CFG.memos && CFG.memos.proxy) || 'https://meting-api.gzh-czy.cc.cd/api/timeline';
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000);
-    const res = await fetch(cfg.url, { signal: ctrl.signal });
+    const timer = setTimeout(() => ctrl.abort(), 10000);
+    const res = await fetch(proxy + '?url=' + encodeURIComponent(cfg.url), { signal: ctrl.signal });
     clearTimeout(timer);
     if (!res.ok) return [];
-    const data = await res.json();
-    const list = Array.isArray(data) ? data : (data.items || []);
+    const list = await res.json();
+    if (!Array.isArray(list)) return [];
     return list.map(it => ({
       type: 'blog',
       date: it.date || it.time || '',

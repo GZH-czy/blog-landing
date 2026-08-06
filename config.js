@@ -169,6 +169,8 @@ window.SITE_CONFIG = {
     enable: true,
     title: '日志',
     limit: 15,
+    // 博客时间轴代理（Vercel Edge Function）
+    proxy: 'https://meting-api.gzh-czy.cc.cd/api/timeline',
     // 数据源配置（可扩展）
     sources: [
       // 手动数据
