@@ -158,13 +158,27 @@ window.SITE_CONFIG = {
   },
 
   /* ---------- 碎碎念 / 更新记录 ----------
-     按 date 倒序排列。可手动维护，也可从 GitHub Issues 同步。
-     tag 可选：项目 / 想法 / 更新 / bug / 其他
+     按 date 倒序排列。支持多数据源，可扩展。
+
+     sources 数组（可按需开启，结果自动合并排序）：
+       1. manual   — 手动维护的 items（默认）
+       2. github   — GitHub 提交记录（预留接口，需配置 token）
+       3. blog     — 博客碎碎念页面（预留接口，Butterfly timeline 样式）
   */
   memos: {
     enable: true,
     title: '碎碎念',
     limit: 10,
+    // 数据源配置（可扩展）
+    sources: [
+      // 手动数据（默认启用）
+      { type: 'manual' },
+      // GitHub 提交记录（取消注释并配置即可启用）
+      // { type: 'github', username: 'GZH-czy', repo: 'GZH-czy.github.io', limit: 5 },
+      // 博客碎碎念（取消注释并配置即可启用）
+      // { type: 'blog', url: 'https://love.gzh-czy.cc.cd/timeline/' },
+    ],
+    // 手动维护的数据（sources 含 manual 时生效）
     items: [
       { date: '2026-08-05', content: '中转页加了视频背景和歌单列表，播放器按钮终于不挤了 🎵', tag: '更新' },
       { date: '2026-08-05', content: '自建了网易云 Meting API，部署在 Vercel Edge 上，告别公共服务跨域问题。', tag: '项目' },

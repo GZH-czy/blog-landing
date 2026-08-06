@@ -487,34 +487,108 @@
     render(all.slice(0, g.limit || 6));
   }
 
-  /* ---------- 碎碎念 ---------- */
-  function renderMemos() {
+  /* ---------- 碎碎念（多数据源，可扩展） ---------- */
+  async function renderMemos() {
     const m = CFG.memos;
-    const section = $('#memosSection');
+    const panel = $('#memosPanel');
     const list = $('#memosList');
-    if (!m || !m.enable || !section || !list) return;
-    const items = (m.items || []).slice();
-    if (!items.length) return;
-    section.hidden = false;
+    if (!m || !m.enable || !panel || !list) return;
     if (m.title) $('#memosTitle').textContent = m.title;
 
-    // 按日期倒序
-    items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-    const limit = m.limit || 10;
+    // 收集所有数据源
+    const sources = m.sources || [{ type: 'manual' }];
+    let allItems = [];
+
+    for (const src of sources) {
+      try {
+        if (src.type === 'manual') {
+          allItems = allItems.concat(m.items || []);
+        } else if (src.type === 'github') {
+          allItems = allItems.concat(await fetchGithubCommits(src));
+        } else if (src.type === 'blog') {
+          allItems = allItems.concat(await fetchBlogTimeline(src));
+        }
+        // 未来可加更多类型：{ type: 'api', url: '...', parser: fn }
+      } catch (e) {
+        console.warn(`[memos] 数据源 ${src.type} 加载失败:`, e);
+      }
+    }
+
+    if (!allItems.length) return;
+    panel.hidden = false;
+
+    // 按日期倒序、去重
+    allItems.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+    const seen = new Set();
+    const items = allItems.filter((it) => {
+      const key = (it.date || '') + (it.content || '').slice(0, 30);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, m.limit || 10);
 
     list.innerHTML = '';
-    items.slice(0, limit).forEach((it) => {
+    items.forEach((it) => {
       const li = document.createElement('li');
       li.className = 'timeline-item';
+      if (it.type === 'github') li.className += ' is-github';
+      if (it.type === 'blog') li.className += ' is-blog';
       li.innerHTML = `
-        <div class="timeline-head">
-          <span class="timeline-date">${escapeHtml(it.date || '')}</span>
-          ${it.tag ? `<span class="timeline-tag">${escapeHtml(it.tag)}</span>` : ''}
+        <div class="timeline-item-title">
+          <div class="item-circle">${escapeHtml(it.date || '')}</div>
         </div>
-        <div class="timeline-content">${escapeHtml(it.content || '')}</div>
+        <div class="timeline-item-content">
+          ${it.tag ? `<span class="timeline-tag">${escapeHtml(it.tag)}</span>` : ''}
+          ${escapeHtml(it.content || '')}
+        </div>
       `;
       list.appendChild(li);
     });
+  }
+
+  // GitHub 提交记录（预留接口）
+  async function fetchGithubCommits(cfg) {
+    if (!cfg.username || !cfg.repo) return [];
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(
+      `https://api.github.com/repos/${encodeURIComponent(cfg.username)}/${encodeURIComponent(cfg.repo)}/commits?per_page=${cfg.limit || 10}`,
+      { signal: ctrl.signal, headers: { Accept: 'application/vnd.github+json' } }
+    );
+    clearTimeout(timer);
+    if (!res.ok) return [];
+    const commits = await res.json();
+    return commits.map((c) => ({
+      type: 'github',
+      date: (c.commit.author.date || '').slice(0, 10),
+      content: c.commit.message.split('\n')[0],
+      tag: 'commit'
+    }));
+  }
+
+  // 博客碎碎念（预留接口，Butterfly timeline 页面）
+  async function fetchBlogTimeline(cfg) {
+    if (!cfg.url) return [];
+    // 注意：跨域限制，建议通过自建代理或 CORS proxy
+    // 示例：返回空数组，实际使用时接入代理
+    console.info('[memos] blog 数据源需要配置 CORS 代理，当前为空');
+    return [];
+    /* 实际实现示例（需代理）：
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(cfg.url, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) return [];
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const items = [];
+    doc.querySelectorAll('.timeline-item').forEach(el => {
+      const date = el.querySelector('.timeline-item-title')?.textContent?.trim() || '';
+      const content = el.querySelector('.timeline-item-content')?.textContent?.trim() || '';
+      if (content) items.push({ type: 'blog', date, content, tag: '博客' });
+    });
+    return items;
+    */
   }
 
   function escapeHtml(s) {

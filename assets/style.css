@@ -410,65 +410,78 @@ body {
   text-align: center;
 }
 
-/* ---------- 碎碎念时间线（侧边栏） ---------- */
+/* ---------- Butterfly 时间轴样式 ---------- */
 .timeline {
   list-style: none;
   position: relative;
-  padding-left: 20px;
+  padding: 0 0 0 24px;
   margin: 0;
 }
 .timeline::before {
   content: '';
   position: absolute;
-  left: 4px;
-  top: 4px;
-  bottom: 4px;
+  left: 5px;
+  top: 8px;
+  bottom: 8px;
   width: 2px;
-  background: rgba(255,255,255,0.15);
+  background: linear-gradient(180deg, rgba(124,196,255,0.6), rgba(255,255,255,0.1));
   border-radius: 1px;
 }
 .timeline-item {
   position: relative;
-  padding: 0 0 16px 0;
+  padding: 0 0 18px 0;
 }
 .timeline-item:last-child { padding-bottom: 0; }
-.timeline-item::before {
-  content: '';
+.item-circle {
   position: absolute;
-  left: -20px;
-  top: 5px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-  border: 2px solid rgba(255,255,255,0.3);
-  box-shadow: 0 0 6px rgba(124,196,255,0.5);
-}
-.timeline-head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 3px;
-}
-.timeline-date {
+  left: -23px;
+  top: 4px;
+  min-width: 48px;
+  padding: 2px 8px;
   font-size: 10px;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
+  text-align: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px;
+  line-height: 18px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -23px;
+  top: 28px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid rgba(255,255,255,0.4);
+  box-shadow: 0 0 8px rgba(124,196,255,0.6);
+}
+.timeline-item.is-github::before { background: #58a6ff; box-shadow: 0 0 8px rgba(88,166,255,0.6); }
+.timeline-item.is-blog::before { background: #f0883e; box-shadow: 0 0 8px rgba(240,136,62,0.6); }
+.timeline-item-title { margin-bottom: 4px; }
+.timeline-item-content {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-soft);
 }
 .timeline-tag {
+  display: inline-block;
   font-size: 9px;
   padding: 0 6px;
-  border-radius: 999px;
+  margin-right: 4px;
+  margin-bottom: 2px;
+  border-radius: 4px;
   background: rgba(124,196,255,0.18);
   color: var(--accent);
   border: 1px solid rgba(124,196,255,0.3);
   line-height: 16px;
+  vertical-align: middle;
 }
-.timeline-content {
-  font-size: 12px;
-  line-height: 1.65;
-  color: var(--text-soft);
-}
+.timeline-item.is-github .timeline-tag { background: rgba(88,166,255,0.18); color: #58a6ff; border-color: rgba(88,166,255,0.3); }
+.timeline-item.is-blog .timeline-tag { background: rgba(240,136,62,0.18); color: #f0883e; border-color: rgba(240,136,62,0.3); }
 
 /* ---------- 切换背景按钮 ---------- */
 .bg-switch {
