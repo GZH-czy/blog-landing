@@ -585,6 +585,71 @@
     showTip._t = setTimeout(() => el.classList.remove('show'), 2500);
   }
 
+  /* ---------- 面板交互 ---------- */
+  function initPanels() {
+    // 创建遮罩层
+    var backdrop = document.createElement('div');
+    backdrop.className = 'panel-backdrop';
+    backdrop.id = 'panelBackdrop';
+    document.body.appendChild(backdrop);
+
+    var openedPanel = null;
+
+    function openPanel(id) {
+      var panel = $('#' + id);
+      if (!panel) return;
+      // 关闭已打开的
+      if (openedPanel && openedPanel !== panel) {
+        openedPanel.classList.remove('open');
+        markToolActive(openedPanel.id, false);
+      }
+      panel.classList.add('open');
+      backdrop.classList.add('show');
+      openedPanel = panel;
+      markToolActive(id, true);
+    }
+    function closePanel() {
+      if (openedPanel) {
+        openedPanel.classList.remove('open');
+        markToolActive(openedPanel.id, false);
+        openedPanel = null;
+      }
+      backdrop.classList.remove('show');
+    }
+    function markToolActive(panelId, active) {
+      var btn = $('.tool-btn[data-panel="' + panelId + '"]');
+      if (btn) btn.classList.toggle('active', active);
+    }
+
+    // 工具按钮点击
+    $$('.tool-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var pid = btn.dataset.panel;
+        if (openedPanel && openedPanel.id === pid) {
+          closePanel();
+        } else {
+          // 懒加载数据
+          if (pid === 'memosPanel') renderMemos();
+          if (pid === 'githubPanel') loadGithubRepos();
+          openPanel(pid);
+        }
+      });
+    });
+
+    // 关闭按钮
+    $$('.panel-close').forEach(function (btn) {
+      btn.addEventListener('click', closePanel);
+    });
+    // 遮罩点击关闭
+    backdrop.addEventListener('click', closePanel);
+    // ESC 关闭
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closePanel();
+    });
+  }
+
+  function $$(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+
   /* ---------- 初始化 ---------- */
   function init() {
     // 遮罩透明度
@@ -604,8 +669,7 @@
     rotateDescription();
     loadHitokoto();
     initMusic();
-    loadGithubRepos();
-    renderMemos();
+    initPanels();
   }
 
   if (document.readyState === 'loading') {

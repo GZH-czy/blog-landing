@@ -60,18 +60,9 @@
   <!-- 顶部提示 -->
   <div class="loading-tip" id="loadingTip"></div>
 
-  <!-- 三栏布局：左碎碎念 / 中主卡片 / 右GitHub -->
-  <main class="layout">
-    <!-- 左：碎碎念 -->
-    <aside class="side side-left" id="memosSection" hidden>
-      <h2 class="side-title">
-        <i class="fa-solid fa-feather"></i> <span id="memosTitle">碎碎念</span>
-      </h2>
-      <ul class="timeline" id="memosList"></ul>
-    </aside>
-
-    <!-- 中：主卡片 -->
-    <section class="card center-card">
+  <!-- 主卡片（居中） -->
+  <main class="stage">
+    <section class="card">
       <img class="avatar" id="avatar" src="" alt="avatar" width="112" height="112" />
       <h1 class="name" id="name"></h1>
       <p class="subtitle" id="subtitle"></p>
@@ -86,20 +77,35 @@
       <nav class="socials" id="socials" aria-label="社交链接"></nav>
 
       <a class="enter-btn" id="enterBtn" href="#" rel="noopener">进入博客</a>
-    </section>
 
-    <!-- 右：GitHub 项目 -->
-    <aside class="side side-right" id="githubSection" hidden>
-      <h2 class="side-title">
-        <i class="fa-brands fa-github"></i> 开源项目
-      </h2>
-      <div class="repo-grid" id="repoGrid">
-        <div class="repo-skeleton"></div>
-        <div class="repo-skeleton"></div>
-        <div class="repo-skeleton"></div>
+      <!-- 细微的功能入口按钮 -->
+      <div class="card-tools" id="cardTools">
+        <button class="tool-btn" data-panel="memosPanel" title="碎碎念"><i class="fa-solid fa-feather"></i></button>
+        <button class="tool-btn" data-panel="githubPanel" title="开源项目"><i class="fa-brands fa-github"></i></button>
       </div>
-    </aside>
+    </section>
   </main>
+
+  <!-- 可展开的面板（默认隐藏） -->
+  <div class="panel" id="memosPanel" hidden>
+    <div class="panel-header">
+      <span class="panel-title"><i class="fa-solid fa-feather"></i> <span id="memosTitle">碎碎念</span></span>
+      <button class="panel-close" type="button"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="panel-body"><ul class="timeline" id="memosList"></ul></div>
+  </div>
+
+  <div class="panel" id="githubPanel" hidden>
+    <div class="panel-header">
+      <span class="panel-title"><i class="fa-brands fa-github"></i> 开源项目</span>
+      <button class="panel-close" type="button"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="panel-body"><div class="repo-grid" id="repoGrid">
+      <div class="repo-skeleton"></div>
+      <div class="repo-skeleton"></div>
+      <div class="repo-skeleton"></div>
+    </div></div>
+  </div>
 
   <!-- 切换背景 -->
   <button class="bg-switch" id="bgSwitch" title="换一张背景" aria-label="切换背景图">
