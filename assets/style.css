@@ -5,14 +5,16 @@
 
 :root {
   --text: #ffffff;
-  --text-soft: rgba(255, 255, 255, 0.82);
-  --text-muted: rgba(255, 255, 255, 0.65);
-  --accent: #7cc4ff;
-  --card-bg: rgba(255, 255, 255, 0.12);
-  --card-border: rgba(255, 255, 255, 0.22);
-  --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-  --radius: 20px;
-  --blur: 18px;
+  --text-soft: rgba(255, 255, 255, 0.85);
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --accent: #9bc7d7;
+  --accent-soft: rgba(155, 199, 215, 0.25);
+  --card-bg: rgba(255, 255, 255, 0.1);
+  --card-border: rgba(255, 255, 255, 0.18);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --blur: 10px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -260,19 +262,18 @@ body {
   position: fixed;
   z-index: 20;
   left: 50%;
-  bottom: 0;
-  transform: translateX(-50%) translateY(100%);
-  width: 100%;
-  max-width: 560px;
-  min-height: 50vh;
-  max-height: 75vh;
-  background: rgba(20, 24, 32, 0.85);
+  bottom: 24px;
+  transform: translateX(-50%) translateY(120%);
+  width: calc(100% - 48px);
+  max-width: 480px;
+  min-height: 300px;
+  max-height: 60vh;
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--card-border);
-  border-bottom: none;
-  border-radius: 20px 20px 0 0;
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+  border-radius: var(--radius);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   transition: transform .4s cubic-bezier(0.22, 1, 0.36, 1);
@@ -282,12 +283,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 14px 18px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   flex-shrink: 0;
 }
 .panel-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -295,31 +296,28 @@ body {
 }
 .panel-title i { color: var(--accent); }
 .panel-close {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
   color: var(--text-muted);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all .2s;
 }
-.panel-close:hover {
-  color: #fff;
-  background: rgba(255,255,255,0.15);
-}
+.panel-close:hover { color: #fff; background: rgba(255,255,255,0.12); }
 .panel-body {
-  padding: 18px 20px;
+  padding: 16px 18px;
   overflow-y: auto;
   flex: 1;
   min-height: 0;
 }
-.panel-body::-webkit-scrollbar { width: 4px; }
-.panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+.panel-body::-webkit-scrollbar { width: 3px; }
+.panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
 .panel-body::-webkit-scrollbar-track { background: transparent; }
 
 /* 遮罩层 */
@@ -410,78 +408,61 @@ body {
   text-align: center;
 }
 
-/* ---------- Butterfly 时间轴样式 ---------- */
+/* ---------- 碎碎念（极简时间轴） ---------- */
 .timeline {
   list-style: none;
-  position: relative;
-  padding: 0 0 0 24px;
+  padding: 0;
   margin: 0;
-}
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 8px;
-  bottom: 8px;
-  width: 2px;
-  background: linear-gradient(180deg, rgba(124,196,255,0.6), rgba(255,255,255,0.1));
-  border-radius: 1px;
 }
 .timeline-item {
   position: relative;
-  padding: 0 0 18px 0;
+  padding: 0 0 16px 18px;
+  border-left: 1px solid rgba(255,255,255,0.15);
+  margin-left: 4px;
 }
-.timeline-item:last-child { padding-bottom: 0; }
-.item-circle {
-  position: absolute;
-  left: -23px;
-  top: 4px;
-  min-width: 48px;
-  padding: 2px 8px;
-  font-size: 10px;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 999px;
-  line-height: 18px;
+.timeline-item:last-child {
+  padding-bottom: 0;
+  border-left-color: transparent;
 }
 .timeline-item::before {
   content: '';
   position: absolute;
-  left: -23px;
-  top: 28px;
-  width: 8px;
-  height: 8px;
+  left: -4px;
+  top: 4px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--accent);
-  border: 2px solid rgba(255,255,255,0.4);
-  box-shadow: 0 0 8px rgba(124,196,255,0.6);
+  border: 2px solid rgba(255,255,255,0.3);
 }
-.timeline-item.is-github::before { background: #58a6ff; box-shadow: 0 0 8px rgba(88,166,255,0.6); }
-.timeline-item.is-blog::before { background: #f0883e; box-shadow: 0 0 8px rgba(240,136,62,0.6); }
-.timeline-item-title { margin-bottom: 4px; }
-.timeline-item-content {
-  font-size: 12px;
-  line-height: 1.7;
-  color: var(--text-soft);
+.timeline-item.is-github::before { background: #58a6ff; }
+.timeline-item.is-blog::before { background: #f0883e; }
+.timeline-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.timeline-date {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 .timeline-tag {
-  display: inline-block;
   font-size: 9px;
   padding: 0 6px;
-  margin-right: 4px;
-  margin-bottom: 2px;
-  border-radius: 4px;
-  background: rgba(124,196,255,0.18);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
   color: var(--accent);
-  border: 1px solid rgba(124,196,255,0.3);
-  line-height: 16px;
-  vertical-align: middle;
+  line-height: 15px;
 }
-.timeline-item.is-github .timeline-tag { background: rgba(88,166,255,0.18); color: #58a6ff; border-color: rgba(88,166,255,0.3); }
-.timeline-item.is-blog .timeline-tag { background: rgba(240,136,62,0.18); color: #f0883e; border-color: rgba(240,136,62,0.3); }
+.timeline-item.is-github .timeline-tag { background: rgba(88,166,255,0.2); color: #58a6ff; }
+.timeline-item.is-blog .timeline-tag { background: rgba(240,136,62,0.2); color: #f0883e; }
+.timeline-content {
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--text-soft);
+}
 
 /* ---------- 切换背景按钮 ---------- */
 .bg-switch {

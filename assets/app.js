@@ -534,13 +534,11 @@
       if (it.type === 'github') li.className += ' is-github';
       if (it.type === 'blog') li.className += ' is-blog';
       li.innerHTML = `
-        <div class="timeline-item-title">
-          <div class="item-circle">${escapeHtml(it.date || '')}</div>
-        </div>
-        <div class="timeline-item-content">
+        <div class="timeline-head">
+          <span class="timeline-date">${escapeHtml(it.date || '')}</span>
           ${it.tag ? `<span class="timeline-tag">${escapeHtml(it.tag)}</span>` : ''}
-          ${escapeHtml(it.content || '')}
         </div>
+        <div class="timeline-content">${escapeHtml(it.content || '')}</div>
       `;
       list.appendChild(li);
     });
