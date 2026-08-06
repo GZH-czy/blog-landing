@@ -171,9 +171,11 @@ window.SITE_CONFIG = {
     limit: 15,
     // 数据源配置（可扩展）
     sources: [
-      // 手动数据（默认启用）
+      // 手动数据
       { type: 'manual' },
-      // 博客碎碎念 JSON（推荐：在博客 source/ 下放 timeline.json）
+      // GitHub 提交记录
+      { type: 'github', username: 'GZH-czy', repo: 'GZH-czy.github.io', limit: 5 },
+      // 博客碎碎念 JSON（在博客 source/ 下放 timeline.json，部署后自动生成）
       { type: 'blog', url: 'https://love.gzh-czy.cc.cd/timeline.json' },
     ],
     // 手动维护的数据（sources 含 manual 时生效）
