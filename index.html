@@ -60,7 +60,7 @@
   <!-- 顶部提示 -->
   <div class="loading-tip" id="loadingTip"></div>
 
-  <!-- 主卡片 -->
+  <!-- 主卡片（首屏居中） -->
   <main class="stage">
     <section class="card">
       <img class="avatar" id="avatar" src="" alt="avatar" width="112" height="112" />
@@ -77,8 +77,35 @@
       <nav class="socials" id="socials" aria-label="社交链接"></nav>
 
       <a class="enter-btn" id="enterBtn" href="#" rel="noopener">进入博客</a>
+
+      <div class="scroll-hint" id="scrollHint" title="向下滚动">
+        <i class="fa-solid fa-chevron-down"></i>
+      </div>
     </section>
   </main>
+
+  <!-- 附加板块 -->
+  <div class="sections">
+    <!-- GitHub 项目 -->
+    <section class="section" id="githubSection" hidden>
+      <h2 class="section-title">
+        <i class="fa-brands fa-github"></i> 开源项目
+      </h2>
+      <div class="repo-grid" id="repoGrid">
+        <div class="repo-skeleton"></div>
+        <div class="repo-skeleton"></div>
+        <div class="repo-skeleton"></div>
+      </div>
+    </section>
+
+    <!-- 碎碎念 -->
+    <section class="section" id="memosSection" hidden>
+      <h2 class="section-title">
+        <i class="fa-solid fa-feather"></i> <span id="memosTitle">碎碎念</span>
+      </h2>
+      <ul class="timeline" id="memosList"></ul>
+    </section>
+  </div>
 
   <!-- 切换背景 -->
   <button class="bg-switch" id="bgSwitch" title="换一张背景" aria-label="切换背景图">

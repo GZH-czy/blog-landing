@@ -402,6 +402,127 @@
     load(0, !!m.autoplay);
   }
 
+  /* ---------- GitHub 项目 ---------- */
+  const LANG_COLORS = {
+    JavaScript: '#f1e05a', TypeScript: '#3178c6', Python: '#3572A5',
+    HTML: '#e34c26', CSS: '#563d7c', Vue: '#41b883', Shell: '#89e051',
+    Java: '#b07219', Go: '#00ADD8', C: '#555555', 'C++': '#f34b7d',
+    PHP: '#4F5D95', Ruby: '#701516', Rust: '#dea584', Dart: '#00B4AB',
+    Kotlin: '#A97BFF', Swift: '#F05138', 'Jupyter Notebook': '#DA5B0B'
+  };
+
+  async function loadGithubRepos() {
+    const g = CFG.github;
+    const section = $('#githubSection');
+    const grid = $('#repoGrid');
+    if (!g || !g.enable || !g.username || !section || !grid) return;
+    section.hidden = false;
+
+    const render = (repos) => {
+      if (!repos.length) {
+        grid.innerHTML = '<div class="repo-empty">暂无公开仓库</div>';
+        return;
+      }
+      grid.innerHTML = '';
+      repos.forEach((r) => {
+        const a = document.createElement('a');
+        a.className = 'repo-card';
+        a.href = r.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        const lang = r.language || '';
+        const dotColor = LANG_COLORS[lang] || '#999';
+        a.innerHTML = `
+          <div class="repo-name"><i class="fa-solid fa-book-bookmark"></i> ${escapeHtml(r.name)}</div>
+          <div class="repo-desc">${escapeHtml(r.description || '暂无描述')}</div>
+          <div class="repo-meta">
+            ${lang ? `<span><i class="repo-lang-dot" style="background:${dotColor}"></i> ${escapeHtml(lang)}</span>` : ''}
+            ${r.stars ? `<span><i class="fa-regular fa-star"></i> ${r.stars}</span>` : ''}
+            ${r.forks ? `<span><i class="fa-solid fa-code-fork"></i> ${r.forks}</span>` : ''}
+          </div>
+        `;
+        grid.appendChild(a);
+      });
+    };
+
+    // 先渲染 pinned（手动置顶）
+    let all = [...(g.pinned || [])];
+
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      const sort = g.sort || 'updated';
+      const res = await fetch(
+        `https://api.github.com/users/${encodeURIComponent(g.username)}/repos?sort=${sort}&per_page=100`,
+        { signal: ctrl.signal, headers: { Accept: 'application/vnd.github+json' } }
+      );
+      clearTimeout(timer);
+      if (res.ok) {
+        let repos = await res.json();
+        if (!g.showForks) repos = repos.filter((r) => !r.fork);
+        if (g.exclude && g.exclude.length) {
+          repos = repos.filter((r) => !g.exclude.includes(r.name));
+        }
+        // 过滤掉 pinned 里已有的
+        const pinnedNames = new Set(all.map((r) => r.name));
+        repos = repos.filter((r) => !pinnedNames.has(r.name));
+        // 按更新时间倒序
+        repos.sort((a, b) => new Date(b.pushed_at || b.updated_at) - new Date(a.pushed_at || a.updated_at));
+        const limit = g.limit || 6;
+        all = all.concat(
+          repos.slice(0, Math.max(0, limit - all.length)).map((r) => ({
+            name: r.name,
+            description: r.description,
+            url: r.html_url,
+            language: r.language,
+            stars: r.stargazers_count,
+            forks: r.forks_count
+          }))
+        );
+      }
+    } catch (e) {
+      console.warn('[github] 仓库加载失败：', e);
+    }
+
+    render(all.slice(0, g.limit || 6));
+  }
+
+  /* ---------- 碎碎念 ---------- */
+  function renderMemos() {
+    const m = CFG.memos;
+    const section = $('#memosSection');
+    const list = $('#memosList');
+    if (!m || !m.enable || !section || !list) return;
+    const items = (m.items || []).slice();
+    if (!items.length) return;
+    section.hidden = false;
+    if (m.title) $('#memosTitle').textContent = m.title;
+
+    // 按日期倒序
+    items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+    const limit = m.limit || 10;
+
+    list.innerHTML = '';
+    items.slice(0, limit).forEach((it) => {
+      const li = document.createElement('li');
+      li.className = 'timeline-item';
+      li.innerHTML = `
+        <div class="timeline-head">
+          <span class="timeline-date">${escapeHtml(it.date || '')}</span>
+          ${it.tag ? `<span class="timeline-tag">${escapeHtml(it.tag)}</span>` : ''}
+        </div>
+        <div class="timeline-content">${escapeHtml(it.content || '')}</div>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
   /* ---------- 渲染页面 ---------- */
   function renderProfile() {
     const p = CFG.profile || {};
@@ -483,6 +604,15 @@
     rotateDescription();
     loadHitokoto();
     initMusic();
+    loadGithubRepos();
+    renderMemos();
+
+    // 滚动提示
+    const hint = $('#scrollHint');
+    if (hint) hint.addEventListener('click', () => {
+      const sections = $('.sections');
+      if (sections) sections.scrollIntoView({ behavior: 'smooth' });
+    });
   }
 
   if (document.readyState === 'loading') {

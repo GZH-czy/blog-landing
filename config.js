@@ -61,8 +61,7 @@ window.SITE_CONFIG = {
     'https://img.0v0.my/backgrounds/l1.webp',
     'https://img.0v0.my/backgrounds/l2.webp',
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80',
-    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80',
-    'https://imgbed.gzh-czy.cc.cd/20260805220654725.mp4'
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80'
   ],
 
   /* ---------- 背景遮罩（0~1，越大背景越暗、文字越清晰） ---------- */
@@ -141,6 +140,35 @@ window.SITE_CONFIG = {
          nid: '536154344'           // 可选：网易云 ID，填了会在播放器显示
        }
        ]
+  },
+
+  /* ---------- GitHub 项目展示 ---------- */
+  github: {
+    enable: true,
+    username: 'GZH-czy',
+    sort: 'updated',         // updated / created / pushed / full_name / stars
+    limit: 6,                // 最多展示几个仓库
+    exclude: [],             // 排除的仓库名，如 ['blog-landing', 'meting-api']
+    showForks: false,        // 是否展示 fork 的仓库
+    // 手动置顶/补充的仓库（会与 API 结果合并，排在最前）
+    pinned: [
+      // { name: 'blog-landing', description: '博客中转页', url: 'https://github.com/GZH-czy/blog-landing', language: 'JavaScript', stars: 0 }
+    ]
+  },
+
+  /* ---------- 碎碎念 / 更新记录 ----------
+     按 date 倒序排列。可手动维护，也可从 GitHub Issues 同步。
+     tag 可选：项目 / 想法 / 更新 / bug / 其他
+  */
+  memos: {
+    enable: true,
+    title: '碎碎念',
+    limit: 10,
+    items: [
+      { date: '2026-08-05', content: '中转页加了视频背景和歌单列表，播放器按钮终于不挤了 🎵', tag: '更新' },
+      { date: '2026-08-05', content: '自建了网易云 Meting API，部署在 Vercel Edge 上，告别公共服务跨域问题。', tag: '项目' },
+      { date: '2026-08-04', content: '想给博客做个安全跳转中转页，参考 yaria.top 的风格，说干就干。', tag: '想法' }
+    ]
   },
 
   /* ---------- 页脚 ---------- */
