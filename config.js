@@ -168,15 +168,15 @@ window.SITE_CONFIG = {
   memos: {
     enable: true,
     title: '日志',
-    limit: 10,
+    limit: 15,
     // 数据源配置（可扩展）
     sources: [
       // 手动数据（默认启用）
       // { type: 'manual' },
       // GitHub 提交记录（取消注释并配置即可启用）
-      { type: 'github', username: 'GZH-czy', repo: 'GZH-czy.github.io', limit: 5 },
+      // { type: 'github', username: 'GZH-czy', repo: 'GZH-czy.github.io', limit: 5 },
       // 博客碎碎念（取消注释并配置即可启用）
-      // { type: 'blog', url: 'https://love.gzh-czy.cc.cd/timeline/' },
+       { type: 'blog', url: 'https://love.gzh-czy.cc.cd/timeline/' },
     ],
     // 手动维护的数据（sources 含 manual 时生效）
     items: [
