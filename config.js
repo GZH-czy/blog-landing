@@ -167,12 +167,12 @@ window.SITE_CONFIG = {
   */
   memos: {
     enable: true,
-    title: '碎碎念',
+    title: '日志',
     limit: 10,
     // 数据源配置（可扩展）
     sources: [
       // 手动数据（默认启用）
-      { type: 'manual' },
+      // { type: 'manual' },
       // GitHub 提交记录（取消注释并配置即可启用）
       { type: 'github', username: 'GZH-czy', repo: 'GZH-czy.github.io', limit: 5 },
       // 博客碎碎念（取消注释并配置即可启用）

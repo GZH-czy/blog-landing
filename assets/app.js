@@ -413,10 +413,9 @@
 
   async function loadGithubRepos() {
     const g = CFG.github;
-    const section = $('#githubSection');
+    const section = $('#githubPanel');
     const grid = $('#repoGrid');
     if (!g || !g.enable || !g.username || !section || !grid) return;
-    section.hidden = false;
 
     const render = (repos) => {
       if (!repos.length) {
