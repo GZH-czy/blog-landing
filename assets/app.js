@@ -606,13 +606,6 @@
     initMusic();
     loadGithubRepos();
     renderMemos();
-
-    // 滚动提示
-    const hint = $('#scrollHint');
-    if (hint) hint.addEventListener('click', () => {
-      const sections = $('.sections');
-      if (sections) sections.scrollIntoView({ behavior: 'smooth' });
-    });
   }
 
   if (document.readyState === 'loading') {

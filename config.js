@@ -150,6 +150,7 @@ window.SITE_CONFIG = {
     limit: 6,                // 最多展示几个仓库
     exclude: [],             // 排除的仓库名，如 ['blog-landing', 'meting-api']
     showForks: false,        // 是否展示 fork 的仓库
+    // 侧边栏空间有限，建议 4~6 个
     // 手动置顶/补充的仓库（会与 API 结果合并，排在最前）
     pinned: [
       // { name: 'blog-landing', description: '博客中转页', url: 'https://github.com/GZH-czy/blog-landing', language: 'JavaScript', stars: 0 }

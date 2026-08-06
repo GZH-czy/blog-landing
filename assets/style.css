@@ -18,8 +18,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
+  height: 100%;
   width: 100%;
-  min-height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -29,7 +30,6 @@ body {
   background: #111;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
 }
 
 /* ---------- 背景层 ---------- */
@@ -66,20 +66,22 @@ body {
   transition: opacity 0.6s ease;
 }
 
-/* ---------- 主容器 ---------- */
-.stage {
+/* ---------- 三栏布局 ---------- */
+.layout {
   position: relative;
   z-index: 2;
   height: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 420px 1fr;
   align-items: center;
-  justify-content: center;
-  padding: 24px;
+  gap: 28px;
+  padding: 32px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.card {
+.center-card {
   width: 100%;
-  max-width: 440px;
   padding: 40px 32px 32px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -95,6 +97,44 @@ body {
   from { opacity: 0; transform: translateY(24px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* 两侧边栏共用样式 */
+.side {
+  padding: 22px 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(var(--blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
+  box-shadow: var(--shadow);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  animation: sideIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.side-left { animation-delay: 0.1s; }
+.side-right { animation-delay: 0.2s; }
+@keyframes sideIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.side-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  position: sticky;
+  top: 0;
+  padding-bottom: 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06) 60%, transparent);
+}
+.side-title i { color: var(--accent); }
+/* 边栏滚动条 */
+.side::-webkit-scrollbar { width: 4px; }
+.side::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+.side::-webkit-scrollbar-track { background: transparent; }
 
 /* ---------- 头像 ---------- */
 .avatar {
@@ -220,115 +260,67 @@ body {
 }
 .enter-btn:active { transform: translateY(0); }
 
-/* ---------- 向下滚动提示 ---------- */
-.scroll-hint {
-  margin-top: 22px;
-  font-size: 18px;
-  color: var(--text-muted);
-  animation: bounce 2s infinite;
-  cursor: pointer;
-}
-.scroll-hint:hover { color: var(--accent); }
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
-
-/* ---------- 下方板块容器 ---------- */
-.sections {
-  position: relative;
-  z-index: 2;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 24px 80px;
-}
-
-.section {
-  margin-top: 40px;
-  animation: sectionIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.section:nth-child(2) { animation-delay: 0.15s; }
-@keyframes sectionIn {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.section-title {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
-}
-.section-title i {
-  color: var(--accent);
-}
-
-/* ---------- GitHub 项目卡片 ---------- */
+/* ---------- GitHub 项目卡片（侧边栏） ---------- */
 .repo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .repo-card {
   display: block;
-  padding: 16px 18px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 14px;
-  backdrop-filter: blur(var(--blur)) saturate(140%);
-  -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
   text-decoration: none;
   color: inherit;
-  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
 }
 .repo-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+  transform: translateX(4px);
+  background: rgba(255,255,255,0.1);
   border-color: rgba(124,196,255,0.4);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 .repo-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--accent);
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .repo-desc {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
   line-height: 1.5;
-  min-height: 36px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 .repo-meta {
   display: flex;
   align-items: center;
-  gap: 14px;
-  font-size: 11px;
+  gap: 12px;
+  font-size: 10px;
   color: var(--text-muted);
 }
-.repo-meta span { display: flex; align-items: center; gap: 4px; }
+.repo-meta span { display: flex; align-items: center; gap: 3px; }
 .repo-lang-dot {
-  width: 8px; height: 8px;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--accent);
   display: inline-block;
 }
 .repo-skeleton {
-  height: 110px;
-  border-radius: 14px;
+  height: 70px;
+  border-radius: 12px;
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   animation: pulse 1.5s ease-in-out infinite;
@@ -338,67 +330,69 @@ body {
   50% { opacity: 1; }
 }
 .repo-empty {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-muted);
-  padding: 20px;
+  padding: 16px;
   text-align: center;
 }
 
-/* ---------- 碎碎念时间线 ---------- */
+/* ---------- 碎碎念时间线（侧边栏） ---------- */
 .timeline {
   list-style: none;
   position: relative;
-  padding-left: 24px;
+  padding-left: 20px;
+  margin: 0;
 }
 .timeline::before {
   content: '';
   position: absolute;
-  left: 5px;
-  top: 6px;
-  bottom: 6px;
+  left: 4px;
+  top: 4px;
+  bottom: 4px;
   width: 2px;
   background: rgba(255,255,255,0.15);
   border-radius: 1px;
 }
 .timeline-item {
   position: relative;
-  padding: 0 0 20px 0;
+  padding: 0 0 16px 0;
 }
 .timeline-item:last-child { padding-bottom: 0; }
 .timeline-item::before {
   content: '';
   position: absolute;
-  left: -23px;
-  top: 6px;
-  width: 12px;
-  height: 12px;
+  left: -20px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--accent);
   border: 2px solid rgba(255,255,255,0.3);
-  box-shadow: 0 0 8px rgba(124,196,255,0.5);
+  box-shadow: 0 0 6px rgba(124,196,255,0.5);
 }
 .timeline-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 6px;
+  margin-bottom: 3px;
 }
 .timeline-date {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
 .timeline-tag {
-  font-size: 10px;
-  padding: 1px 8px;
+  font-size: 9px;
+  padding: 0 6px;
   border-radius: 999px;
   background: rgba(124,196,255,0.18);
   color: var(--accent);
   border: 1px solid rgba(124,196,255,0.3);
+  line-height: 16px;
 }
 .timeline-content {
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.65;
   color: var(--text-soft);
 }
 
@@ -454,16 +448,26 @@ body {
 .loading-tip.show { opacity: 1; }
 
 /* ---------- 响应式 ---------- */
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
+    overflow-y: auto;
+    height: 100%;
+  }
+  html, body { overflow: auto; }
+  .side { max-height: 320px; order: 2; }
+  .side-right { order: 3; }
+  .center-card { order: 1; max-width: 440px; margin: 0 auto; width: 100%; }
+}
 @media (max-width: 480px) {
-  .card { padding: 32px 22px 26px; }
+  .center-card { padding: 32px 22px 26px; }
   .name { font-size: 26px; }
   .avatar { width: 96px; height: 96px; }
   .enter-btn { padding: 11px 34px; }
-  .sections { padding: 0 16px 60px; }
-  .section { margin-top: 30px; }
-  .repo-grid { grid-template-columns: 1fr; }
-  .timeline { padding-left: 20px; }
-  .timeline-item::before { left: -19px; width: 10px; height: 10px; }
+  .layout { padding: 14px; gap: 12px; }
+  .side { padding: 16px 14px; max-height: 260px; }
 }
 
 /* ============================================================
