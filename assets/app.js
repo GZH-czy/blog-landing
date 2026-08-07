@@ -696,6 +696,7 @@
           // 懒加载数据
           if (pid === 'memosPanel') renderMemos();
           if (pid === 'githubPanel') loadGithubRepos();
+          if (pid === 'infoPanel') loadVisitorInfo();
           openPanel(pid);
         }
       });
@@ -714,6 +715,100 @@
   }
 
   function $$(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+
+  /* ---------- 访客信息（IP + 天气） ---------- */
+  async function loadVisitorInfo() {
+    var locEl = $('#infoLocation');
+    var ipEl = $('#infoIp');
+    var weatherEl = $('#infoWeather');
+    var tipEl = $('#infoTip');
+
+    // 重置为加载状态
+    if (locEl) locEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    if (ipEl) ipEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    if (weatherEl) weatherEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    if (tipEl) tipEl.className = 'info-tip';
+
+    try {
+      // 获取 IP 信息（含地理位置）
+      var ctrl = new AbortController();
+      var timer = setTimeout(function () { ctrl.abort(); }, 8000);
+      var res = await fetch('https://ipapi.co/json/', { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('IP API HTTP ' + res.status);
+      var data = await res.json();
+
+      var city = data.city || '';
+      var region = data.region || '';
+      var country = data.country_name || '';
+      var ip = data.ip || '';
+      var lat = data.latitude;
+      var lon = data.longitude;
+
+      // 显示属地
+      if (locEl) {
+        var locationText = country;
+        if (region) locationText += ' ' + region;
+        if (city) locationText += ' ' + city;
+        locEl.textContent = locationText || '未知';
+      }
+      // 显示 IP
+      if (ipEl) ipEl.textContent = ip || '未知';
+
+      // 获取天气
+      if (lat && lon) {
+        try {
+          var wCtrl = new AbortController();
+          var wTimer = setTimeout(function () { wCtrl.abort(); }, 8000);
+          var wRes = await fetch(
+            'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current_weather=true&timezone=auto',
+            { signal: wCtrl.signal }
+          );
+          clearTimeout(wTimer);
+          if (wRes.ok) {
+            var wData = await wRes.json();
+            var cw = wData.current_weather;
+            if (cw) {
+              var temp = cw.temperature;
+              var weatherCode = cw.weathercode;
+              var isRaining = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].indexOf(weatherCode) > -1;
+              var weatherDesc = getWeatherDesc(weatherCode);
+              if (weatherEl) {
+                weatherEl.innerHTML = weatherDesc + ' ' + temp + '°C ' + (isRaining ? '🌧️' : '');
+              }
+              // 下雨提醒
+              if (tipEl && isRaining) {
+                tipEl.textContent = '🌂 当前正在下雨，出门记得带伞哦～';
+                tipEl.classList.add('show');
+              }
+            }
+          }
+        } catch (e) {
+          if (weatherEl) weatherEl.textContent = '天气获取失败';
+        }
+      } else {
+        if (weatherEl) weatherEl.textContent = '无位置信息';
+      }
+    } catch (e) {
+      if (locEl) locEl.textContent = '获取失败';
+      if (ipEl) ipEl.textContent = '获取失败';
+      if (weatherEl) weatherEl.textContent = '获取失败';
+    }
+  }
+
+  // WMO 天气代码转中文
+  function getWeatherDesc(code) {
+    var map = {
+      0: '☀️ 晴', 1: '🌤️ 大部晴', 2: '⛅ 多云', 3: '☁️ 阴',
+      45: '🌫️ 雾', 48: '🌫️ 雾凇', 51: '🌦️ 小毛毛雨', 53: '🌦️ 毛毛雨', 55: '🌧️ 大毛毛雨',
+      56: '🌧️ 冻毛毛雨', 57: '🌧️ 大冻毛毛雨',
+      61: '🌧️ 小雨', 63: '🌧️ 中雨', 65: '🌧️ 大雨', 66: '🌧️ 冻雨', 67: '🌧️ 大冻雨',
+      71: '🌨️ 小雪', 73: '🌨️ 中雪', 75: '❄️ 大雪', 77: '🌨️ 雪粒',
+      80: '🌧️ 小阵雨', 81: '🌧️ 阵雨', 82: '⛈️ 大阵雨',
+      85: '🌨️ 小阵雪', 86: '❄️ 大阵雪', 95: '⛈️ 雷暴', 96: '⛈️ 雷暴冰雹', 99: '⛈️ 强雷暴冰雹'
+    };
+    return map[code] || '🌡️ 未知';
+  }
 
   /* ---------- 初始化 ---------- */
   function init() {

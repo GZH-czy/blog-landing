@@ -176,7 +176,7 @@ window.SITE_CONFIG = {
       // 手动数据
       { type: 'manual' },
       // GitHub 提交记录
-      { type: 'github', username: 'GZH-czy', repo: 'GZH-czy.github.io', limit: 5 },
+      //{ type: 'github', username: 'GZH-czy', repo: 'GZH-czy.github.io', limit: 5 },
       // 博客碎碎念（通过代理抓取 timeline 页面）
       { type: 'blog', url: 'https://love.gzh-czy.cc.cd/timeline/' },
     ],

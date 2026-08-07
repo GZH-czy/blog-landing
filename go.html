@@ -43,18 +43,38 @@
       color: var(--text-muted);
       margin-bottom: 22px;
     }
+    .url-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+      margin-bottom: 10px;
+    }
     .url-box {
-      padding: 14px 16px;
+      flex: 1;
+      min-width: 0;
+      padding: 12px 14px;
       background: rgba(0,0,0,0.3);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       font-size: 13px;
       word-break: break-all;
       color: var(--accent);
-      margin-bottom: 10px;
       user-select: all;
       text-align: left;
     }
+    .copy-btn {
+      width: 42px;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+      transition: all .2s;
+    }
+    .copy-btn:hover { color: var(--accent); border-color: var(--accent); background: rgba(155,199,215,0.15); }
+    .copy-btn.copied { color: #6ecb8a; border-color: #6ecb8a; }
     .host-line {
       font-size: 12px;
       color: var(--text-muted);
@@ -112,10 +132,13 @@
   <main class="stage">
     <section class="go-card">
       <div class="warn-icon"><i class="fa-solid fa-link"></i></div>
-      <h1>您即将离开本站</h1>
-      <p class="tip">外部链接请注意安全，确认无误后再继续访问。</p>
+      <h1>您即将离开 子涵のblog</h1>
+      <p class="tip">子涵提醒您：外部链接请注意安全，确认无误后再继续访问。</p>
 
-      <div class="url-box" id="targetUrl"></div>
+      <div class="url-row">
+        <div class="url-box" id="targetUrl"></div>
+        <button class="copy-btn" id="copyBtn" title="复制链接"><i class="fa-regular fa-copy"></i></button>
+      </div>
       <div class="host-line">目标域名：<b id="host">-</b></div>
 
       <div class="go-actions">
@@ -129,6 +152,11 @@
       <div class="countdown" id="countdown"></div>
     </section>
   </main>
+
+  <!-- 页脚（和中转页一致） -->
+  <footer class="footer">
+    <span>© 2026 子涵 · Built with ❤️</span>
+  </footer>
 
 <script>
 (function () {
@@ -209,6 +237,23 @@
         cdEl.innerHTML = '将在 <b>' + left + '</b> 秒后自动跳转';
       }
     }, 1000);
+  }
+
+  // 复制链接
+  var copyBtn = document.getElementById('copyBtn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      var url = (target && target.href) || '';
+      if (!url) return;
+      navigator.clipboard.writeText(url).then(function () {
+        copyBtn.classList.add('copied');
+        copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        setTimeout(function () {
+          copyBtn.classList.remove('copied');
+          copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+        }, 1500);
+      }).catch(function () {});
+    });
   }
 
   // 继续访问：停止倒计时
