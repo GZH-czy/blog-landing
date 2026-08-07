@@ -767,7 +767,8 @@
             tipEl.classList.add('show');
           }
         } catch (e) {
-          if (weatherEl) weatherEl.textContent = '天气获取失败';
+          if (weatherEl) weatherEl.textContent = '天气获取失败: ' + (e && e.message ? e.message : '未知错误');
+          console.error('[weather] 详细错误:', e);
         }
       } else {
         if (weatherEl) weatherEl.textContent = '无位置信息';
