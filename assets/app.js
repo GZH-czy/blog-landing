@@ -757,7 +757,7 @@
           var wProvider = (cfg.weather && cfg.weather.provider) || 'openmeteo';
           var wKey = cfg.weather && cfg.weather.key;
           var wLocation = cfg.weather && cfg.weather.location;
-          var wData = await fetchWeather(wProvider, wKey, wLocation, lat, lon);
+          var wData = await fetchWeather(wProvider, wKey, wLocation, lat, lon, cfg);
           if (weatherEl) {
             weatherEl.innerHTML = wData.desc + ' ' + wData.temp + '°C ' + (wData.rain ? '🌧️' : '');
           }
@@ -827,7 +827,7 @@
   }
 
   // 天气（多 provider）
-  async function fetchWeather(provider, key, location, lat, lon) {
+  async function fetchWeather(provider, key, location, lat, lon, cfg) {
     var ctrl = new AbortController();
     var timer = setTimeout(function () { ctrl.abort(); }, 8000);
 
