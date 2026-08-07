@@ -741,9 +741,29 @@
         if (ipData.city) locText += ' ' + ipData.city;
         locEl.textContent = locText || '未知';
       }
-      if (ipEl) ipEl.textContent = ipData.ip || '未知';
+      // 显示 IP（高德/腾讯不返回 IP，需从 ipify 获取）
+      if (ipEl) {
+        if (ipData.ip) {
+          ipEl.textContent = ipData.ip;
+        } else {
+          try {
+            var ipCtrl = new AbortController();
+            var ipTimer = setTimeout(function () { ipCtrl.abort(); }, 5000);
+            var ipRes = await fetch('https://api.ipify.org?format=json', { signal: ipCtrl.signal });
+            clearTimeout(ipTimer);
+            if (ipRes.ok) {
+              var ipJson = await ipRes.json();
+              ipEl.textContent = ipJson.ip || '未知';
+            } else {
+              ipEl.textContent = '未知';
+            }
+          } catch (e) {
+            ipEl.textContent = '未知';
+          }
+        }
+      }
 
-      // === 2. 获取天气 ===
+      // === 2. 获取天气（基于 IP 坐标，无需手动填写）===
       var lat = ipData.lat, lon = ipData.lon;
       if (lat && lon) {
         try {
@@ -783,7 +803,18 @@
       if (!res.ok) throw new Error('amap HTTP ' + res.status);
       var d = await res.json();
       if (d.status !== '1') throw new Error('amap 失败');
-      return { country: '中国', region: d.province, city: d.city, ip: d.ip || '', lat: 0, lon: 0 };
+      // 从 rectangle 解析坐标（格式："lng1,lat1;lng2,lat2"）
+      var lat = 0, lon = 0;
+      if (d.rectangle) {
+        var parts = d.rectangle.split(';');
+        if (parts.length === 2) {
+          var p1 = parts[0].split(',');
+          var p2 = parts[1].split(',');
+          lon = (parseFloat(p1[0]) + parseFloat(p2[0])) / 2;
+          lat = (parseFloat(p1[1]) + parseFloat(p2[1])) / 2;
+        }
+      }
+      return { country: '中国', region: d.province, city: d.city, ip: d.ip || '', lat: lat, lon: lon };
     }
 
     if (provider === 'tencent') {
