@@ -1,3 +1,4 @@
+// trigger rebuild 1786094221
 /**
  * ============================================================
  *  博客中转页 · 站点配置
@@ -213,13 +214,13 @@ window.SITE_CONFIG = {
     enable: true,
     // IP 定位
     ip: {
-      provider: 'ipapi',    // ipapi / amap / tencent / ipapi
-      key: '',              // 高德/腾讯需要
+      provider: 'amap',    // ipapi / amap / tencent / ipapi
+      key: '1644f82c3a72a2690fabe4847a369151',              // 高德/腾讯需要
     },
     // 天气
     weather: {
-      provider: 'openmeteo',  // openmeteo / qweather / seniverse
-      key: '',                // 和风/心知需要
+      provider: 'qweather',  // openmeteo / qweather / seniverse
+      key: 'be8d34aabe4d4664adb458bd90ef6f76',                // 和风/心知需要
       location: '',           // 和风天气需要城市 ID（如 101010100）
     },
   },
