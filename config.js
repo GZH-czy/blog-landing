@@ -188,6 +188,42 @@ window.SITE_CONFIG = {
     ]
   },
 
+  /* ---------- 访客信息（IP + 天气） ----------
+     推荐国内可用 HTTPS API（无需 key 或免费申请）：
+
+     IP 定位（选其一）：
+       1. ipapi.co      免 key，国外准确，国内可能不准
+       2. 高德地图     需 key，国内最准 → https://lbs.amap.com/api/webservice/guide/api/ipconfig
+       3. 腾讯地图     需 key，国内准 → https://lbs.qq.com/service/webService/webServiceGuide/webServiceIp
+
+     天气（选其一）：
+       1. Open-Meteo   免 key，全球通用 → https://open-meteo.com/
+       2. 和风天气     需 key，国内最准 → https://dev.qweather.com/
+       3. 心知天气     需 key，国内准 → https://www.seniverse.com/
+
+     配置示例（无需 key 方案）：
+       ip: { provider: 'ipapi' },
+       weather: { provider: 'openmeteo' }
+
+     配置示例（国内精准方案）：
+       ip: { provider: 'amap', key: '你的高德 key' },
+       weather: { provider: 'qweather', key: '你的和风 key', location: '101010100' }
+  */
+  visitor: {
+    enable: true,
+    // IP 定位
+    ip: {
+      provider: 'ipapi',    // ipapi / amap / tencent / ipapi
+      key: '',              // 高德/腾讯需要
+    },
+    // 天气
+    weather: {
+      provider: 'openmeteo',  // openmeteo / qweather / seniverse
+      key: '',                // 和风/心知需要
+      location: '',           // 和风天气需要城市 ID（如 101010100）
+    },
+  },
+
   /* ---------- 页脚 ---------- */
   footer: {
     // 可用 {year} 占位

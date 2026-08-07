@@ -716,73 +716,47 @@
 
   function $$(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
 
-  /* ---------- 访客信息（IP + 天气） ---------- */
+  /* ---------- 访客信息（IP + 天气，多 provider 可配置） ---------- */
   async function loadVisitorInfo() {
     var locEl = $('#infoLocation');
     var ipEl = $('#infoIp');
     var weatherEl = $('#infoWeather');
     var tipEl = $('#infoTip');
+    var cfg = CFG.visitor || {};
 
-    // 重置为加载状态
     if (locEl) locEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
     if (ipEl) ipEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
     if (weatherEl) weatherEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
     if (tipEl) tipEl.className = 'info-tip';
 
     try {
-      // 获取 IP 信息（含地理位置）- 使用 ip-api.com（支持中文、免 key、支持 CORS）
-      var ctrl = new AbortController();
-      var timer = setTimeout(function () { ctrl.abort(); }, 8000);
-      var res = await fetch('http://ip-api.com/json/?lang=zh-CN', { signal: ctrl.signal });
-      clearTimeout(timer);
-      if (!res.ok) throw new Error('IP API HTTP ' + res.status);
-      var data = await res.json();
-      if (data.status !== 'success') throw new Error('IP API 返回失败');
+      // === 1. 获取 IP 定位 ===
+      var ipProvider = (cfg.ip && cfg.ip.provider) || 'ipapi';
+      var ipKey = cfg.ip && cfg.ip.key;
+      var ipData = await fetchIpInfo(ipProvider, ipKey);
 
-      var city = data.city || '';
-      var region = data.regionName || '';
-      var country = data.country || '';
-      var ip = data.query || '';
-      var lat = data.lat;
-      var lon = data.lon;
-
-      // 显示属地
       if (locEl) {
-        var locationText = country;
-        if (region) locationText += ' ' + region;
-        if (city) locationText += ' ' + city;
-        locEl.textContent = locationText || '未知';
+        var locText = ipData.country || '';
+        if (ipData.region) locText += ' ' + ipData.region;
+        if (ipData.city) locText += ' ' + ipData.city;
+        locEl.textContent = locText || '未知';
       }
-      // 显示 IP
-      if (ipEl) ipEl.textContent = ip || '未知';
+      if (ipEl) ipEl.textContent = ipData.ip || '未知';
 
-      // 获取天气
+      // === 2. 获取天气 ===
+      var lat = ipData.lat, lon = ipData.lon;
       if (lat && lon) {
         try {
-          var wCtrl = new AbortController();
-          var wTimer = setTimeout(function () { wCtrl.abort(); }, 8000);
-          var wRes = await fetch(
-            'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current_weather=true&timezone=auto',
-            { signal: wCtrl.signal }
-          );
-          clearTimeout(wTimer);
-          if (wRes.ok) {
-            var wData = await wRes.json();
-            var cw = wData.current_weather;
-            if (cw) {
-              var temp = cw.temperature;
-              var weatherCode = cw.weathercode;
-              var isRaining = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].indexOf(weatherCode) > -1;
-              var weatherDesc = getWeatherDesc(weatherCode);
-              if (weatherEl) {
-                weatherEl.innerHTML = weatherDesc + ' ' + temp + '°C ' + (isRaining ? '🌧️' : '');
-              }
-              // 下雨提醒
-              if (tipEl && isRaining) {
-                tipEl.textContent = '🌂 当前正在下雨，出门记得带伞哦～';
-                tipEl.classList.add('show');
-              }
-            }
+          var wProvider = (cfg.weather && cfg.weather.provider) || 'openmeteo';
+          var wKey = cfg.weather && cfg.weather.key;
+          var wLocation = cfg.weather && cfg.weather.location;
+          var wData = await fetchWeather(wProvider, wKey, wLocation, lat, lon);
+          if (weatherEl) {
+            weatherEl.innerHTML = wData.desc + ' ' + wData.temp + '°C ' + (wData.rain ? '🌧️' : '');
+          }
+          if (tipEl && wData.rain) {
+            tipEl.textContent = '🌂 当前正在下雨，出门记得带伞哦～';
+            tipEl.classList.add('show');
           }
         } catch (e) {
           if (weatherEl) weatherEl.textContent = '天气获取失败';
@@ -795,6 +769,81 @@
       if (ipEl) ipEl.textContent = '获取失败';
       if (weatherEl) weatherEl.textContent = '获取失败';
     }
+  }
+
+  // IP 定位（多 provider）
+  async function fetchIpInfo(provider, key) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 8000);
+
+    if (provider === 'amap') {
+      // 高德地图 IP 定位（需 key，国内最准）
+      var res = await fetch('https://restapi.amap.com/v3/ip?key=' + encodeURIComponent(key), { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('amap HTTP ' + res.status);
+      var d = await res.json();
+      if (d.status !== '1') throw new Error('amap 失败');
+      return { country: '中国', region: d.province, city: d.city, ip: d.ip || '', lat: 0, lon: 0 };
+    }
+
+    if (provider === 'tencent') {
+      // 腾讯地图 IP 定位（需 key）
+      var res = await fetch('https://apis.map.qq.com/ws/location/v1/ip?key=' + encodeURIComponent(key), { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('tencent HTTP ' + res.status);
+      var d = await res.json();
+      if (d.status !== 0) throw new Error('tencent 失败');
+      var r = d.result || {};
+      var ad = r.ad_info || {};
+      return { country: ad.nation, region: ad.province, city: ad.city, ip: r.ip || '', lat: r.location && r.location.lat, lon: r.location && r.location.lng };
+    }
+
+    // 默认：ipapi.co（免 key，HTTPS）
+    var res = await fetch('https://ipapi.co/json/', { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('ipapi HTTP ' + res.status);
+    var d = await res.json();
+    return { country: d.country_name, region: d.region, city: d.city, ip: d.ip || '', lat: d.latitude, lon: d.longitude };
+  }
+
+  // 天气（多 provider）
+  async function fetchWeather(provider, key, location, lat, lon) {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 8000);
+
+    if (provider === 'qweather') {
+      // 和风天气（需 key，国内最准）
+      var loc = location || (lon + ',' + lat);
+      var res = await fetch('https://devapi.qweather.com/v7/weather/now?location=' + encodeURIComponent(loc) + '&key=' + encodeURIComponent(key), { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('qweather HTTP ' + res.status);
+      var d = await res.json();
+      if (d.code !== '200') throw new Error('qweather 失败');
+      var now = d.now || {};
+      return { desc: now.text, temp: now.temp, rain: now.text.indexOf('雨') > -1 };
+    }
+
+    if (provider === 'seniverse') {
+      // 心知天气（需 key）
+      var loc = location || (lon + ',' + lat);
+      var res = await fetch('https://api.seniverse.com/v3/weather/now.json?location=' + encodeURIComponent(loc) + '&key=' + encodeURIComponent(key) + '&language=zh-Hans&unit=c', { signal: ctrl.signal });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('seniverse HTTP ' + res.status);
+      var d = await res.json();
+      var r = (d.results && d.results[0]) || {};
+      var now = r.now || {};
+      return { desc: now.text, temp: now.temperature, rain: now.text.indexOf('雨') > -1 };
+    }
+
+    // 默认：Open-Meteo（免 key，HTTPS，全球）
+    var res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current_weather=true&timezone=auto', { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('openmeteo HTTP ' + res.status);
+    var d = await res.json();
+    var cw = d.current_weather || {};
+    var code = cw.weathercode;
+    var isRain = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].indexOf(code) > -1;
+    return { desc: getWeatherDesc(code), temp: cw.temperature, rain: isRain };
   }
 
   // WMO 天气代码转中文
