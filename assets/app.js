@@ -872,12 +872,12 @@
     return { desc: getWeatherDesc(code), temp: cw.temperature, rain: isRain };
   }
 
-  // 获取 IP 地址（多备选）
+  // 获取 IP 地址（icanhazip 支持 CORS，首选）
   async function getIpFromService() {
     var services = [
-      { url: 'https://api.ipify.org?format=json', parse: function (d) { return d.ip; } },
-      { url: 'https://httpbin.org/ip', parse: function (d) { return d.origin; } },
       { url: 'https://icanhazip.com', parse: function (d) { return d.trim(); }, text: true },
+      { url: 'https://api.ipify.org?format=json', parse: function (d) { return d.ip; } },
+      { url: 'https://ifconfig.me/ip', parse: function (d) { return d.trim(); }, text: true },
     ];
     for (var i = 0; i < services.length; i++) {
       try {
