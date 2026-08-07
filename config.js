@@ -221,6 +221,7 @@ window.SITE_CONFIG = {
     weather: {
       provider: 'qweather',  // openmeteo / qweather / seniverse
       key: 'be8d34aabe4d4664adb458bd90ef6f76',                // 和风/心知需要
+      host: 'm24jad47yc.re.qweatherapi.com',                  // 和风天气自定义 API Host
       location: '',           // 和风天气需要城市 ID（如 101010100）
     },
   },

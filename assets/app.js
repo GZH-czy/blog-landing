@@ -833,7 +833,8 @@
     if (provider === 'qweather') {
       // 和风天气（需 key，国内最准，使用 X-QW-Api-Key 头部认证）
       var loc = location || (lon + ',' + lat);
-      var res = await fetch('https://devapi.qweather.com/v7/weather/now?location=' + encodeURIComponent(loc), {
+      var host = (cfg.weather && cfg.weather.host) || 'devapi.qweather.com';
+      var res = await fetch('https://' + host + '/v7/weather/now?location=' + encodeURIComponent(loc), {
         signal: ctrl.signal,
         headers: { 'X-QW-Api-Key': key },
       });
