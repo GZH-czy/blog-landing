@@ -177,8 +177,8 @@ window.SITE_CONFIG = {
       { type: 'manual' },
       // GitHub 提交记录
       { type: 'github', username: 'GZH-czy', repo: 'GZH-czy.github.io', limit: 5 },
-      // 博客碎碎念 JSON（在博客 source/ 下放 timeline.json，部署后自动生成）
-      { type: 'blog', url: 'https://love.gzh-czy.cc.cd/timeline.json' },
+      // 博客碎碎念（通过代理抓取 timeline 页面）
+      { type: 'blog', url: 'https://love.gzh-czy.cc.cd/timeline/' },
     ],
     // 手动维护的数据（sources 含 manual 时生效）
     items: [
