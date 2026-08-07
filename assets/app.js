@@ -730,20 +730,21 @@
     if (tipEl) tipEl.className = 'info-tip';
 
     try {
-      // 获取 IP 信息（含地理位置）
+      // 获取 IP 信息（含地理位置）- 使用 ip-api.com（支持中文、免 key、支持 CORS）
       var ctrl = new AbortController();
       var timer = setTimeout(function () { ctrl.abort(); }, 8000);
-      var res = await fetch('https://ipapi.co/json/', { signal: ctrl.signal });
+      var res = await fetch('http://ip-api.com/json/?lang=zh-CN', { signal: ctrl.signal });
       clearTimeout(timer);
       if (!res.ok) throw new Error('IP API HTTP ' + res.status);
       var data = await res.json();
+      if (data.status !== 'success') throw new Error('IP API 返回失败');
 
       var city = data.city || '';
-      var region = data.region || '';
-      var country = data.country_name || '';
-      var ip = data.ip || '';
-      var lat = data.latitude;
-      var lon = data.longitude;
+      var region = data.regionName || '';
+      var country = data.country || '';
+      var ip = data.query || '';
+      var lat = data.lat;
+      var lon = data.lon;
 
       // 显示属地
       if (locEl) {
