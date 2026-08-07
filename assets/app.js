@@ -741,25 +741,12 @@
         if (ipData.city) locText += ' ' + ipData.city;
         locEl.textContent = locText || '未知';
       }
-      // 显示 IP（高德/腾讯不返回 IP，需从 ipify 获取）
+      // 显示 IP（高德/腾讯不返回 IP，需单独获取）
       if (ipEl) {
         if (ipData.ip) {
           ipEl.textContent = ipData.ip;
         } else {
-          try {
-            var ipCtrl = new AbortController();
-            var ipTimer = setTimeout(function () { ipCtrl.abort(); }, 5000);
-            var ipRes = await fetch('https://api.ipify.org?format=json', { signal: ipCtrl.signal });
-            clearTimeout(ipTimer);
-            if (ipRes.ok) {
-              var ipJson = await ipRes.json();
-              ipEl.textContent = ipJson.ip || '未知';
-            } else {
-              ipEl.textContent = '未知';
-            }
-          } catch (e) {
-            ipEl.textContent = '未知';
-          }
+          ipEl.textContent = await getIpFromService();
         }
       }
 
@@ -845,11 +832,14 @@
     if (provider === 'qweather') {
       // 和风天气（需 key，国内最准）
       var loc = location || (lon + ',' + lat);
-      var res = await fetch('https://devapi.qweather.com/v7/weather/now?location=' + encodeURIComponent(loc) + '&key=' + encodeURIComponent(key), { signal: ctrl.signal });
+      var res = await fetch('https://devapi.qweather.com/v7/weather/now?location=' + encodeURIComponent(loc) + '&key=' + encodeURIComponent(key), {
+        signal: ctrl.signal,
+        headers: { Referer: 'https://www.qweather.com/' },
+      });
       clearTimeout(timer);
       if (!res.ok) throw new Error('qweather HTTP ' + res.status);
       var d = await res.json();
-      if (d.code !== '200') throw new Error('qweather 失败');
+      if (d.code !== '200') throw new Error('qweather 失败: ' + (d.detail || d.code));
       var now = d.now || {};
       return { desc: now.text, temp: now.temp, rain: now.text.indexOf('雨') > -1 };
     }
@@ -875,6 +865,29 @@
     var code = cw.weathercode;
     var isRain = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].indexOf(code) > -1;
     return { desc: getWeatherDesc(code), temp: cw.temperature, rain: isRain };
+  }
+
+  // 获取 IP 地址（多备选）
+  async function getIpFromService() {
+    var services = [
+      { url: 'https://api.ipify.org?format=json', parse: function (d) { return d.ip; } },
+      { url: 'https://httpbin.org/ip', parse: function (d) { return d.origin; } },
+      { url: 'https://icanhazip.com', parse: function (d) { return d.trim(); }, text: true },
+    ];
+    for (var i = 0; i < services.length; i++) {
+      try {
+        var ctrl = new AbortController();
+        var t = setTimeout(function () { ctrl.abort(); }, 5000);
+        var res = await fetch(services[i].url, { signal: ctrl.signal });
+        clearTimeout(t);
+        if (res.ok) {
+          var data = services[i].text ? await res.text() : await res.json();
+          var ip = services[i].parse(data);
+          if (ip) return ip;
+        }
+      } catch (e) { /* 继续下一个 */ }
+    }
+    return '未知';
   }
 
   // WMO 天气代码转中文
