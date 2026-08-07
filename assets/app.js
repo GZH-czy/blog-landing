@@ -761,8 +761,9 @@
           if (weatherEl) {
             weatherEl.innerHTML = wData.desc + ' ' + wData.temp + '°C ' + (wData.rain ? '🌧️' : '');
           }
-          if (tipEl && wData.rain) {
-            tipEl.textContent = '🌂 当前正在下雨，出门记得带伞哦～';
+          // 个性化天气提醒
+          if (tipEl && wData.tip) {
+            tipEl.textContent = wData.tip;
             tipEl.classList.add('show');
           }
         } catch (e) {
@@ -830,18 +831,21 @@
     var timer = setTimeout(function () { ctrl.abort(); }, 8000);
 
     if (provider === 'qweather') {
-      // 和风天气（需 key，国内最准）
+      // 和风天气（需 key，国内最准，使用 X-QW-Api-Key 头部认证）
       var loc = location || (lon + ',' + lat);
-      var res = await fetch('https://devapi.qweather.com/v7/weather/now?location=' + encodeURIComponent(loc) + '&key=' + encodeURIComponent(key), {
+      var res = await fetch('https://devapi.qweather.com/v7/weather/now?location=' + encodeURIComponent(loc), {
         signal: ctrl.signal,
-        headers: { Referer: 'https://www.qweather.com/' },
+        headers: { 'X-QW-Api-Key': key },
       });
       clearTimeout(timer);
       if (!res.ok) throw new Error('qweather HTTP ' + res.status);
       var d = await res.json();
       if (d.code !== '200') throw new Error('qweather 失败: ' + (d.detail || d.code));
       var now = d.now || {};
-      return { desc: now.text, temp: now.temp, rain: now.text.indexOf('雨') > -1 };
+      var text = now.text || now.textDay || '';
+      var temp = parseFloat(now.temp || now.tempMax) || 0;
+      var tip = buildWeatherTip(text, temp);
+      return { desc: text, temp: temp, rain: text.indexOf('雨') > -1, tip: tip };
     }
 
     if (provider === 'seniverse') {
@@ -888,6 +892,38 @@
       } catch (e) { /* 继续下一个 */ }
     }
     return '未知';
+  }
+
+  // 个性化天气提醒
+  function buildWeatherTip(text, temp) {
+    var tips = [];
+    var t = text.toLowerCase();
+
+    // 降水类
+    if (t.indexOf('暴雨') > -1) tips.push('⛈️ 暴雨天气，尽量避免外出，注意防涝');
+    else if (t.indexOf('大雨') > -1) tips.push('🌧️ 大雨倾盆，出门记得带伞，注意路滑');
+    else if (t.indexOf('中雨') > -1) tips.push('🌦️ 有中雨，带把伞出门吧');
+    else if (t.indexOf('小雨') > -1 || t.indexOf('毛毛雨') > -1) tips.push('🌂 细雨绵绵，带伞防潮');
+    else if (t.indexOf('雪') > -1) tips.push('❄️ 有雪，注意保暖防滑');
+    else if (t.indexOf('冰雹') > -1) tips.push('🧊 冰雹预警，注意安全');
+    else if (t.indexOf('雾') > -1 || t.indexOf('霾') > -1) tips.push('🌫️ 能见度低，出行注意安全');
+
+    // 温度类
+    if (temp >= 35) tips.push('🥵 高温酷暑，注意防暑降温，多喝水');
+    else if (temp >= 30) tips.push('☀️ 天气较热，注意防晒');
+    else if (temp >= 25) tips.push('😊 温度适宜，舒适宜人');
+    else if (temp >= 15) tips.push('🍃 微凉，适当添衣');
+    else if (temp >= 5) tips.push('🧥 较冷，注意保暖');
+    else if (temp >= 0) tips.push('🥶 寒冷，多穿一点');
+    else tips.push('🧊 冰点以下，注意防冻');
+
+    // 其他
+    if (t.indexOf('雷') > -1) tips.push('⚡ 雷雨天气，注意防雷');
+    if (t.indexOf('大风') > -1 || t.indexOf('狂') > -1) tips.push('💨 大风天气，远离高空坠物');
+    if (t.indexOf('沙尘') > -1) tips.push('😷 沙尘天气，戴口罩出行');
+    if (t.indexOf('晴') > -1 && temp >= 20 && temp <= 28) tips.push('🌈 晴空万里，适合出游');
+
+    return tips.length ? tips.join(' · ') : '🌈 天气不错，愿你心情也好～';
   }
 
   // WMO 天气代码转中文
