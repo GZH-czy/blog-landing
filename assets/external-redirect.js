@@ -72,21 +72,26 @@
 
   function processLink(a) {
     if (!a || a.dataset.redirectProcessed) return;
-    // 排除匹配的元素
-    if (EXCLUDE && a.matches(EXCLUDE)) {
+    try {
+      var href = a.getAttribute('href');
+      // 排除匹配的元素（扩展名）
+      if (EXCLUDE && href && /\.(png|jpe?g|gif|webp|svg|bmp|ico|mp4|webm|ogg|mp3|pdf|zip|rar)(\?|#|$)/i.test(href)) {
+        a.dataset.redirectProcessed = '1';
+        return;
+      }
+      if (!shouldRedirect(href)) {
+        a.dataset.redirectProcessed = '1';
+        return;
+      }
+      a.href = makeGoUrl(href);
       a.dataset.redirectProcessed = '1';
-      return;
-    }
-    var href = a.getAttribute('href');
-    if (!shouldRedirect(href)) {
+      // 新标签打开，更友好
+      if (!a.target) a.target = '_blank';
+      a.rel = (a.rel ? a.rel + ' ' : '') + 'noopener noreferrer';
+    } catch (e) {
+      // 解析失败，跳过
       a.dataset.redirectProcessed = '1';
-      return;
     }
-    a.href = makeGoUrl(href);
-    a.dataset.redirectProcessed = '1';
-    // 新标签打开，更友好
-    if (!a.target) a.target = '_blank';
-    a.rel = (a.rel ? a.rel + ' ' : '') + 'noopener noreferrer';
   }
 
   function processAll(root) {
