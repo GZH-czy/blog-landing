@@ -34,7 +34,7 @@
   var GO_URL = detectGoUrl();
   var WHITELIST = CFG.whitelist || [];
   var SELECTOR = CFG.selector || 'a[href]';
-  var EXCLUDE = CFG.exclude || 'a:has(img), a[href$=".png"], a[href$=".jpg"], a[href$=".jpeg"], a[href$=".gif"], a[href$=".webp"], a[href$=".svg"], a[href$=".bmp"], a[href$=".ico"], a[href$=".mp4"], a[href$=".webm"], a[href$=".ogg"], a[href$=".mp3"], a[href$=".pdf"], a[href$=".zip"], a[href$=".rar"]';
+  var EXCLUDE = CFG.exclude || 'a[href$=".png"], a[href$=".jpg"], a[href$=".jpeg"], a[href$=".gif"], a[href$=".webp"], a[href$=".svg"], a[href$=".bmp"], a[href$=".ico"], a[href$=".mp4"], a[href$=".webm"], a[href$=".ogg"], a[href$=".mp3"], a[href$=".pdf"], a[href$=".zip"], a[href$=".rar"]';
   var SAME_SITE_ALSO = !!CFG.sameSiteAlso;
   var EXTRA = CFG.extraParams || ''; // 附加参数，如 &ref=blog
 
