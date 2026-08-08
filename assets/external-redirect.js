@@ -34,6 +34,7 @@
   var GO_URL = detectGoUrl();
   var WHITELIST = CFG.whitelist || [];
   var SELECTOR = CFG.selector || 'a[href]';
+  var EXCLUDE = CFG.exclude || 'a:has(img), a[href$=".png"], a[href$=".jpg"], a[href$=".jpeg"], a[href$=".gif"], a[href$=".webp"], a[href$=".svg"], a[href$=".bmp"], a[href$=".ico"], a[href$=".mp4"], a[href$=".webm"], a[href$=".ogg"], a[href$=".mp3"], a[href$=".pdf"], a[href$=".zip"], a[href$=".rar"]';
   var SAME_SITE_ALSO = !!CFG.sameSiteAlso;
   var EXTRA = CFG.extraParams || ''; // 附加参数，如 &ref=blog
 
@@ -71,6 +72,11 @@
 
   function processLink(a) {
     if (!a || a.dataset.redirectProcessed) return;
+    // 排除匹配的元素
+    if (EXCLUDE && a.matches(EXCLUDE)) {
+      a.dataset.redirectProcessed = '1';
+      return;
+    }
     var href = a.getAttribute('href');
     if (!shouldRedirect(href)) {
       a.dataset.redirectProcessed = '1';

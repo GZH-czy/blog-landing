@@ -62,7 +62,8 @@ window.SITE_CONFIG = {
     'https://img.0v0.my/backgrounds/l1.webp',
     'https://img.0v0.my/backgrounds/l2.webp',
     'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80',
-    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80'
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80',
+    'https://api.elaina.cat/random/pc',
   ],
 
   /* ---------- 背景遮罩（0~1，越大背景越暗、文字越清晰） ---------- */
@@ -134,8 +135,8 @@ window.SITE_CONFIG = {
       //   nid: '123456'           // 可选：网易云 ID，填了会在播放器显示
       // }
        {
-         title: '示例歌曲',
-         artist: '歌手名',
+         title: 'ひとりの夜想曲',
+         artist: '高橋諒',
          url: 'https://music.163.com/#/song?id=536154344',
          cover: 'http://p2.music.126.net/09RDXHTPLSDU8SayrYq9Ig==/109951170245472485.jpg?param=130y130',
          nid: '536154344'           // 可选：网易云 ID，填了会在播放器显示
