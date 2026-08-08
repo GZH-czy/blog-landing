@@ -101,9 +101,9 @@ window.SITE_CONFIG = {
       'gzh-czy.github.io',
       '.github.com',
       'github.com',
-      'api.elaina.cat/random',
-      'www.dmoe.cc/random.php',
-      'loremflickr.com/600/400/cat',
+      '.dmoe.cc',
+      '.elaina.cat',
+      'loremflickr.com',
     ]
   },
 
